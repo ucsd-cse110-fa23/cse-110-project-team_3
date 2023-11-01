@@ -1,0 +1,16 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "client.App",
+            "projectName": "Lab5-Test_3b43a0b4",
+            "vmArgs": "--module-path '/Users/abenstirling/Documents/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
+        }
+    ]
+}
