@@ -21,12 +21,16 @@ public class ChatGPT {
         int maxTokens = Integer.parseInt(args[0]);
         String prompt = args[1];
 
-        // Create a request body which you will pass into request object
+        generateResponse(prompt);
+    }
+
+    public static String generateResponse(String prompt) throws Exception {
+        // Create a request body using the provided prompt
         JSONObject requestBody = new JSONObject();
         requestBody.put("model", MODEL);
         requestBody.put("prompt", prompt);
-        requestBody.put("max_tokens", maxTokens);
-        requestBody.put("temperature", 1.0);
+        requestBody.put("max_tokens", 50); // You can set the desired max_tokens value
+        requestBody.put("temperature", 0.7); // You can adjust the temperature
 
         // Create the HTTP Client
         HttpClient client = HttpClient.newHttpClient();
@@ -51,8 +55,7 @@ public class ChatGPT {
         // Extract choices from the JSON object
         JSONArray choices = responseJson.getJSONArray("choices");
         String generatedText = choices.getJSONObject(0).getString("text");
-
-        System.out.println(generatedText);
-
+        return generatedText;
     }
+
 }

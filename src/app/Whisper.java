@@ -26,49 +26,9 @@ public class Whisper {
         }
 
         String audioFilePath = args[0];
-        File file = new File(audioFilePath);
+        File audioFile = new File(audioFilePath);
 
-        // Set up HTTP connection
-        java.net.URL url = new URI(API_ENDPOINT).toURL();
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
-
-        // Set up request headers
-        String boundary = "Boundary-" + System.currentTimeMillis();
-        connection.setRequestProperty(
-                "Content-Type",
-                "multipart/form-data; boundary=" + boundary);
-        connection.setRequestProperty("Authorization", "Bearer " + TOKEN);
-
-        // Set up output stream to write request body
-        OutputStream outputStream = connection.getOutputStream();
-
-        // Write model parameter to request body
-        writeParameterToOutputStream(outputStream, "model", MODEL, boundary);
-
-        // Write file parameter to request body
-        writeFileToOutputStream(outputStream, file, boundary);
-
-        // Write closing boundary to request body
-        outputStream.write(("\r\n--" + boundary + "--\r\n").getBytes());
-
-        // Flush and close output stream
-        outputStream.flush();
-        outputStream.close();
-
-        // Get response code
-        int responseCode = connection.getResponseCode();
-
-        // Check response code and handle response accordingly
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            handleSuccessResponse(connection);
-        } else {
-            handleErrorResponse(connection);
-        }
-
-        // Disconnect connection
-        connection.disconnect();
+        transcribeAudio(audioFile);
     }
 
     // Helper method to write a file to the output stream in multipart form data
@@ -106,7 +66,54 @@ public class Whisper {
         outputStream.write((parameterValue + "\r\n").getBytes());
     }
 
-    private static void handleSuccessResponse(HttpURLConnection connection)
+    // Modify the transcribeAudio method to return the transcribed text
+    public static String transcribeAudio(File audioFile) throws IOException, URISyntaxException {
+        // Set up HTTP connection
+        java.net.URL url = new URI(API_ENDPOINT).toURL();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+
+        // Set up request headers
+        String boundary = "Boundary-" + System.currentTimeMillis();
+        connection.setRequestProperty(
+                "Content-Type",
+                "multipart/form-data; boundary=" + boundary);
+        connection.setRequestProperty("Authorization", "Bearer " + TOKEN);
+
+        // Set up output stream to write request body
+        OutputStream outputStream = connection.getOutputStream();
+
+        // Write model parameter to request body
+        writeParameterToOutputStream(outputStream, "model", MODEL, boundary);
+
+        // Write file parameter to request body
+        writeFileToOutputStream(outputStream, audioFile, boundary);
+
+        // Write closing boundary to request body
+        outputStream.write(("\r\n--" + boundary + "--\r\n").getBytes());
+
+        // Flush and close output stream
+        outputStream.flush();
+        outputStream.close();
+
+        // Get response code
+        int responseCode = connection.getResponseCode();
+
+        // Check response code and handle response accordingly
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            return handleSuccessResponse(connection);
+        } else {
+            handleErrorResponse(connection);
+        }
+
+        // Disconnect connection
+        connection.disconnect();
+        return null; // Return null if there was an error
+    }
+
+    // Modify the handleSuccessResponse method to return the transcribed text
+    private static String handleSuccessResponse(HttpURLConnection connection)
             throws IOException, JSONException {
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(connection.getInputStream()));
@@ -123,10 +130,13 @@ public class Whisper {
 
         // Print the transcription result
         System.out.println("Transcription Result: " + generatedText);
+
+        return generatedText; // Return the transcribed text
     }
 
-    // Helper method to handle an error response
-    private static void handleErrorResponse(HttpURLConnection connection)
+    // Modify the handleErrorResponse method to return an empty string in case of an
+    // error
+    private static String handleErrorResponse(HttpURLConnection connection)
             throws IOException, JSONException {
         BufferedReader errorReader = new BufferedReader(
                 new InputStreamReader(connection.getErrorStream()));
@@ -138,6 +148,8 @@ public class Whisper {
         errorReader.close();
         String errorResult = errorResponse.toString();
         System.out.println("Error Result: " + errorResult);
+
+        return ""; // Return an empty string in case of an error
     }
 
 }

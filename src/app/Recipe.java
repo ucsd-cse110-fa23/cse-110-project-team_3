@@ -112,6 +112,15 @@ class AppFrame extends FlowPane {
                             audioInputStream,
                             AudioFileFormat.Type.WAVE,
                             audioFile);
+
+                    String transcribedText = Whisper.transcribeAudio(audioFile);
+
+                    // Call the ChatGPT class to generate a response based on the transcribed text
+                    String response = ChatGPT.generateResponse(transcribedText);
+
+                    // Do something with the response, e.g., display it in the UI
+                    System.out.println("ChatGPT Response: " + response);
+
                     Thread.sleep(5 * 1000);
                 } catch (Exception ex) {
                     ex.printStackTrace();
