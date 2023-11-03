@@ -7,11 +7,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-import org.json.JSONObject;
-import org.json.JSONException;
 import java.io.*;
 import java.net.*;
-import org.json.*;
+import org.json.JSONException;
+import org.json.JSONException;
 
 public class Whisper {
     private static final String API_ENDPOINT = "https://api.openai.com/v1/audio/transcriptions";
