@@ -4,6 +4,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class ChatGPT {
     private static final String API_ENDPOINT = "https://api.openai.com/v1/completions";

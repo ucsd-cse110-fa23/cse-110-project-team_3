@@ -1,16 +1,17 @@
+package app;
 
-// Imports
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-
-import java.io.*;
-import java.net.*;
-import org.json.JSONException;
-import org.json.JSONException;
 
 public class Whisper {
     private static final String API_ENDPOINT = "https://api.openai.com/v1/audio/transcriptions";
@@ -28,7 +29,7 @@ public class Whisper {
         File file = new File(audioFilePath);
 
         // Set up HTTP connection
-        URL url = new URI(API_ENDPOINT).toURL();
+        java.net.URL url = new URI(API_ENDPOINT).toURL();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
