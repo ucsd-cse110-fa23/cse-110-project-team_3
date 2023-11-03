@@ -32,6 +32,18 @@ public class Main extends Application {
         Label label = new Label("text recipe goes here");
         vbox.getChildren().add(label);
 
+        String prompt = "Give me a recipe that uses milk";
+        int maxTokens = 1000;
+        ChatGPT c = new ChatGPT(prompt, maxTokens);
+        String response;
+        try {
+            response = c.generateRecipe();
+        } catch (Exception e) {
+            response = "error";
+        }
+        Label recipe = new Label(response);
+        vbox.getChildren().add(recipe);
+
         vbox.setAlignment(Pos.CENTER);
         Scene scene = new Scene(vbox, 600, 600);
 

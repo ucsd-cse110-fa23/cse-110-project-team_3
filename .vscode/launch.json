@@ -9,7 +9,7 @@
             "name": "Main",
             "request": "launch",
             "mainClass": "ImageUploader.Main",
-            "vmArgs": "--module-path '/Users/seijiminowada/Desktop/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
+            "vmArgs": "--module-path 'C:/Users/jdhei/Documents/CSE110Labs/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
         },
         {
             "type": "java",
