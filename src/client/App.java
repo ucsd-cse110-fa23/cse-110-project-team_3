@@ -251,7 +251,17 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        // Setting the Layout of the Window - Should contain a Header, Footer, and the RecipeList
+        AppFrame root = new AppFrame();
 
+        // Set the title of the app
+        primaryStage.setTitle("Recipe List");
+        // Create a scene of the mentioned size with the border pane
+        primaryStage.setScene(new Scene(root, 750, 600));
+        // Make the window non-resizable
+        primaryStage.setResizable(false);
+        // Show the app
+        primaryStage.show();
     }
 
     public static void main(String[] args) {

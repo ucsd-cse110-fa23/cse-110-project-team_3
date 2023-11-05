@@ -9,8 +9,8 @@
             "name": "App",
             "request": "launch",
             "mainClass": "client.App",
-            "projectName": "Lab5-Test_3b43a0b4",
-            "vmArgs": "--module-path '/Users/abenstirling/Documents/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
+            "projectName": "cse-110-project-team_3",
+            "vmArgs": "--module-path 'C:/Users/sams4/Desktop/School Stuffs/5) Fall 2023/CSE 110/openjfx-21_windows-x64_bin-sdk/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
         }
     ]
 }
