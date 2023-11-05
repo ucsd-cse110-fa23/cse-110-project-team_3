@@ -32,7 +32,43 @@ class Recipe extends HBox {
 }
 
 class RecipeList extends VBox {
+    RecipeList() {
+        this.setSpacing(5); // sets spacing between contacts
+        this.setPrefSize(750, 560);
+        this.setStyle("-fx-background-color: #F0F8FF;");
+    }
 
+    public void updateContactIndices() {
+        int index = 1;
+        for (int i = 0; i < this.getChildren().size(); i++) {
+            if (this.getChildren().get(i) instanceof Recipe) {
+                ((Recipe) this.getChildren().get(i)).setRecipeIndex(index);
+                index++;
+            }
+        }
+    }
+
+    public void sortRecipes() {
+        ArrayList<Recipe> contactList = new ArrayList<Recipe>();
+        for (int i = 0; i < this.getChildren().size(); i++) {
+            if (this.getChildren().get(i) instanceof Recipe) {
+                contactList.add((Recipe)this.getChildren().get(i));
+            }
+        }
+        /*
+         *  code generated from chatGPT 3.5 using the prompt 
+         *  sort tasks in a to-do-list lexicographically in java
+         */ 
+        Collections.sort(contactList, new Comparator<Recipe>() {
+            public int compare(Recipe contact1, Recipe contact2) {
+                String contactString1 = contact1.getRecipeName().getText();
+                String contactString2 = contact2.getRecipeName().getText();
+                return contactString1.compareToIgnoreCase(contactString2);
+            }
+        });
+        this.getChildren().setAll(contactList);
+        updateContactIndices();
+    }
 }
 
 class Footer extends HBox {
