@@ -54,5 +54,8 @@ public class ChatGPT {
         JSONArray choices = responseJson.getJSONArray("choices");
         String generatedText = choices.getJSONObject(0).getString("text");
         return generatedText;
+    }
+    public String generateFakeRecipie() {
+        return "Recipe goes here";
     }        
 }

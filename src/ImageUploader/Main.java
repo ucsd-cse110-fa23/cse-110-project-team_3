@@ -52,7 +52,8 @@ public class Main extends Application {
         ChatGPT c = new ChatGPT(prompt, maxTokens);
         String response;
         try {
-            response = c.generateRecipe();
+            //response = c.generateRecipe();
+            response = c.generateFakeRecipie();
         } catch (Exception e) {
             response = "error";
         }
