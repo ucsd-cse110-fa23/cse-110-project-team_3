@@ -145,7 +145,8 @@ class AppFrame extends FlowPane {
                     String transcribedText = Whisper.transcribeAudio(audioFile);
 
                     // Add breakfast, lunch, dinner buttons to the prompt
-                    transcribedText = "Goal: " + lastSelectedMealType + ";" + transcribedText;
+                    transcribedText = "Goal: " + lastSelectedMealType + ";" + transcribedText
+                            + "split it into title, ingredients, instructions";
 
                     // Call the ChatGPT class to generate a response based on the transcribed text
                     String response = ChatGPT.generateResponse(transcribedText);
@@ -162,6 +163,7 @@ class AppFrame extends FlowPane {
             });
             recordingThread.start();
         }
+
     }
 
     private void stopRecording() {
@@ -170,6 +172,41 @@ class AppFrame extends FlowPane {
             targetDataLine.close();
         }
         recordingLabel.setVisible(false);
+    }
+
+    // TEST AUDIO RECORDING FEATURE
+    public static void testAudioRecordingFeature() {
+        // Initialize the app frame
+        AppFrame appFrame = new AppFrame();
+
+        // Simulate button clicks and check for expected behavior
+        System.out.println("Testing start recording...");
+        appFrame.startButton.fire(); // Simulate start button click
+        if (!appFrame.recordingLabel.isVisible()) {
+            System.out.println("Test failed: Recording label should be visible after starting recording.");
+        } else {
+            System.out.println("Test passed: Recording label is visible after starting recording.");
+        }
+
+        // Wait for the recording to be processed
+        try {
+            Thread.sleep(6 * 1000); // Wait for recording thread to complete
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Simulate stop button click and check for expected behavior
+        System.out.println("Testing stop recording...");
+        appFrame.stopButton.fire(); // Simulate stop button click
+        if (appFrame.recordingLabel.isVisible()) {
+            System.out.println("Test failed: Recording label should not be visible after stopping recording.");
+        } else {
+            System.out.println("Test passed: Recording label is not visible after stopping recording.");
+        }
+
+        // TODO: Add additional checks for file creation, audio transcription, and
+        // ChatGPT response
+        // You might need to mock objects and responses to fully test these components
     }
 }
 
@@ -194,4 +231,5 @@ public class Recipe extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
 }
