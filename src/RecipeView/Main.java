@@ -1,10 +1,12 @@
-package ImageUploader;
+package RecipeView;
 
 // Add necessary imports
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -32,20 +34,24 @@ public class Main extends Application {
         titleVbox.getChildren().add(labelTitle);
 
         VBox middleVbox = new VBox();
-        Label labelIngredients = new Label("Recipe Ingredients");
-        middleVbox.getChildren().add(labelIngredients);
+        //Label labelIngredients = new Label("Recipe Ingredients");
+        //middleVbox.getChildren().add(labelIngredients);
 
-        VBox bottomVbox = new VBox();
-        Label labelDirections = new Label("Recipe Directions");
-        bottomVbox.getChildren().add(labelDirections);
+        //VBox bottomVbox = new VBox();
+        //Label labelDirections = new Label("Recipe Directions");
+        //bottomVbox.getChildren().add(labelDirections);
+
+        ScrollPane scroll = new ScrollPane();
+        scroll.setContent(middleVbox);
 
         VBox mainVBox = new VBox();
-        mainVBox.getChildren().addAll(titleVbox, middleVbox, bottomVbox);
+        mainVBox.getChildren().addAll(titleVbox, scroll/*, bottomVbox*/);
 
         titleVbox.setAlignment(Pos.CENTER);
         middleVbox.setAlignment(Pos.CENTER);
-        bottomVbox.setAlignment(Pos.CENTER);
+        //bottomVbox.setAlignment(Pos.CENTER);
 
+        
         
         String prompt = "Give me a recipe that uses milk";
         int maxTokens = 1000;
@@ -53,7 +59,7 @@ public class Main extends Application {
         String response;
         try {
             //response = c.generateRecipe();
-            response = c.generateFakeRecipie();
+            response = c.generateFakeRecipe();
         } catch (Exception e) {
             response = "error";
         }

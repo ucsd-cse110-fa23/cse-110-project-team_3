@@ -1,4 +1,4 @@
-package ImageUploader;
+package RecipeView;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -8,6 +8,9 @@ import java.net.http.HttpResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class ChatGPT {
     private static final String API_ENDPOINT = "https://api.openai.com/v1/completions";
@@ -55,7 +58,14 @@ public class ChatGPT {
         String generatedText = choices.getJSONObject(0).getString("text");
         return generatedText;
     }
-    public String generateFakeRecipie() {
-        return "Recipe goes here";
+    public String generateFakeRecipe() throws IOException {
+
+        Path path = Paths.get("recipe.txt");
+
+        String recipe = Files.readString(path);
+
+        return recipe;
+
+        //return "Recipe goes here";
     }        
 }
