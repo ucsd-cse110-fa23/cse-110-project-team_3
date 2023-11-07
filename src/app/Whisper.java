@@ -113,7 +113,7 @@ public class Whisper {
     }
 
     // Modify the handleSuccessResponse method to return the transcribed text
-    private static String handleSuccessResponse(HttpURLConnection connection)
+    public static String handleSuccessResponse(HttpURLConnection connection)
             throws IOException, JSONException {
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(connection.getInputStream()));
@@ -136,7 +136,7 @@ public class Whisper {
 
     // Modify the handleErrorResponse method to return an empty string in case of an
     // error
-    private static String handleErrorResponse(HttpURLConnection connection)
+    public static String handleErrorResponse(HttpURLConnection connection)
             throws IOException, JSONException {
         BufferedReader errorReader = new BufferedReader(
                 new InputStreamReader(connection.getErrorStream()));
