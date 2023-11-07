@@ -19,18 +19,34 @@ class AppFrame extends FlowPane {
     private Label recordingLabel;
     private Thread recordingThread;
 
+    // Buttons for breakfast,lunch,dinner
+    private Button breakfastButton;
+    private Button lunchButton;
+    private Button dinnerButton;
+    public String lastSelectedMealType = "";
+
     // Set a default style for buttons and fields - background color, font size,
     // italics
     String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px;";
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-text-fill: red; visibility: hidden";
 
     AppFrame() {
+
         // Set properties for the flowpane
-        this.setPrefSize(370, 120);
+        this.setPrefSize(800, 800);
         this.setPadding(new Insets(5, 0, 5, 5));
         this.setVgap(10);
         this.setHgap(10);
-        this.setPrefWrapLength(170);
+        this.setPrefWrapLength(500);
+
+        breakfastButton = new Button("Breakfast");
+        breakfastButton.setStyle(defaultButtonStyle); // Assuming defaultButtonStyle is defined
+
+        lunchButton = new Button("Lunch");
+        lunchButton.setStyle(defaultButtonStyle);
+
+        dinnerButton = new Button("Dinner");
+        dinnerButton.setStyle(defaultButtonStyle);
 
         // Add the buttons and text fields
         startButton = new Button("Start");
@@ -42,7 +58,8 @@ class AppFrame extends FlowPane {
         recordingLabel = new Label("Recording...");
         recordingLabel.setStyle(defaultLabelStyle);
 
-        this.getChildren().addAll(startButton, stopButton, recordingLabel);
+        this.getChildren().addAll(breakfastButton, lunchButton, startButton, stopButton, recordingLabel);
+        // this.getChildren().addAll(startButton, stopButton, recordingLabel);
 
         // Get the audio format
         audioFormat = getAudioFormat();
@@ -60,6 +77,18 @@ class AppFrame extends FlowPane {
         // Stop Button
         stopButton.setOnAction(e -> {
             stopRecording();
+        });
+
+        breakfastButton.setOnAction(e -> {
+            lastSelectedMealType = "Breakfast";
+        });
+
+        lunchButton.setOnAction(e -> {
+            lastSelectedMealType = "Lunch";
+        });
+
+        dinnerButton.setOnAction(e -> {
+            lastSelectedMealType = "Dinner";
         });
     }
 
@@ -114,6 +143,9 @@ class AppFrame extends FlowPane {
                             audioFile);
 
                     String transcribedText = Whisper.transcribeAudio(audioFile);
+
+                    // Add breakfast, lunch, dinner buttons to the prompt
+                    transcribedText = "Goal: " + lastSelectedMealType + ";" + transcribedText;
 
                     // Call the ChatGPT class to generate a response based on the transcribed text
                     String response = ChatGPT.generateResponse(transcribedText);
