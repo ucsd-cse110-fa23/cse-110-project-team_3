@@ -1,75 +1,106 @@
 package RecipeView;
 
-// Add necessary imports
 import javafx.application.Application;
-import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.geometry.Insets;
+import javafx.stage.Stage;
 import javafx.geometry.Pos;
+import javafx.scene.layout.*;
+import javafx.scene.control.ScrollPane;
+import javafx.geometry.Insets;
+import javafx.scene.text.*;
+import java.io.*;
 
-// JavaFX Application main entry point
-public class Main extends Application {
-    public static void main(String[] args) {
-        launch(args);
+class Recipe extends VBox {
+    Recipe(String recipe) throws IOException {
+        Text text = new Text(recipe);
+        text.setWrappingWidth(600);
+        this.getChildren().add(text);
+        VBox.setMargin(text, new Insets(20, 20, 20, 20));
+        this.setStyle("-fx-font-size: 15;");
     }
+}
 
-    @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("New Recipe");
+class Footer extends HBox {
 
+    Footer() {
+        this.setPrefSize(500, 60);
+        this.setStyle("-fx-background-color: #F0F8FF;");
+        this.setSpacing(15);
+    }
+}
 
-        //vbox.setAlignment(Pos.CENTER);
-        //Scene scene = new Scene(vbox, 600, 600);
+class Header extends HBox {
 
-        VBox titleVbox = new VBox();
-        titleVbox.setPadding(new Insets(10, 100, 30, 100));
-        Label labelTitle = new Label("Recipe title");
-        labelTitle.setFont(Font.font("Arial", FontWeight.BOLD, 50));
-        titleVbox.getChildren().add(labelTitle);
+    Header() {
+        this.setPrefSize(500, 60); // Size of the header
+        this.setStyle("-fx-background-color: #F0F8FF;");
 
-        VBox middleVbox = new VBox();
-        //Label labelIngredients = new Label("Recipe Ingredients");
-        //middleVbox.getChildren().add(labelIngredients);
+        Text titleText = new Text("Recipe"); // Text of the Header
+        titleText.setStyle("-fx-font-weight: bold; -fx-font-size: 20;");
+        this.getChildren().add(titleText);
+        this.setAlignment(Pos.CENTER); // Align the text to the Center
+    }
+}
 
-        //VBox bottomVbox = new VBox();
-        //Label labelDirections = new Label("Recipe Directions");
-        //bottomVbox.getChildren().add(labelDirections);
+class AppFrame extends BorderPane{
+
+    private Header header;
+    private Footer footer;
+    private Recipe recipe;
+
+    AppFrame() throws IOException
+    {
+
+        String recipeBody = RecipeGeneration.generateFakeRecipe();
+
+        // Initialise the header Object
+        header = new Header();
+
+        // Create a tasklist Object to hold the tasks
+        recipe = new Recipe(recipeBody);
+        
+        // Initialise the Footer Object
+        footer = new Footer();
 
         ScrollPane scroll = new ScrollPane();
-        scroll.setContent(middleVbox);
+        scroll.setContent(recipe);
 
-        VBox mainVBox = new VBox();
-        mainVBox.getChildren().addAll(titleVbox, scroll/*, bottomVbox*/);
 
-        titleVbox.setAlignment(Pos.CENTER);
-        middleVbox.setAlignment(Pos.CENTER);
-        //bottomVbox.setAlignment(Pos.CENTER);
+        // Add header to the top of the BorderPane
+        this.setTop(header);
+        // Add scroller to the centre of the BorderPane
+        this.setCenter(scroll);
+        // Add footer to the bottom of the BorderPane
+        this.setBottom(footer);
 
-        
-        
-        String prompt = "Give me a recipe that uses milk";
-        int maxTokens = 1000;
-        ChatGPT c = new ChatGPT(prompt, maxTokens);
-        String response;
-        try {
-            //response = c.generateRecipe();
-            response = c.generateFakeRecipe();
-        } catch (Exception e) {
-            response = "error";
-        }
-        Label recipe = new Label(response);
-        middleVbox.getChildren().add(recipe);
+        // Call Event Listeners for the Buttons
+        addListeners();
+    }
 
-        Scene scene = new Scene(mainVBox, 600, 600);
+    public void addListeners() {
 
-        primaryStage.setScene(scene);
+    }
+}
+
+public class Main extends Application {
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+
+        // Setting the Layout of the Window- Should contain a Header, Footer and the TaskList
+        AppFrame root = new AppFrame();
+
+        // Set the title of the app
+        primaryStage.setTitle("Recipe");
+        // Create scene of mentioned size with the border pane
+        primaryStage.setScene(new Scene(root, 700, 600));
+        // Make window non-resizable
+        primaryStage.setResizable(false);
+        // Show the app
         primaryStage.show();
     }
 
+    public static void main(String[] args) {
+        launch(args);
+    }
 }
