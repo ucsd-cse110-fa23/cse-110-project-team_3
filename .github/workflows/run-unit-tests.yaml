@@ -41,7 +41,7 @@ jobs:
       run: chmod +x ./gradlew
 
     - name: Execute Gradle build
-      run: ./gradlew build
+      run: gradle build
 
     # report the results
     - name: Publish Test Report
