@@ -147,15 +147,19 @@ class RecipeAppFrame extends BorderPane {
 public class RecipeView extends Stage {
     Stage recipeStage;
     RecipeAppFrame root;
+    String title;
+    String text;
     RecipeView() throws IOException {
         root = new RecipeAppFrame();
     }
 
     public void setRecipeText(String text) throws IOException {
         root.setRecipeBody(text);
+        this.text = text;
     }
     public void setRecipeTitle(String title) {
         root.setRecipeHeader(title);
+        this.title = title;
     }
     public void setUpRecipe(String recipe) throws IOException {
         String adjustedRecipe = recipe.trim();
@@ -170,11 +174,11 @@ public class RecipeView extends Stage {
         }
     }
     public String getRecipeTitle() {
-        return this.root.getRecipeHeader();
+        return this.title;
     }
 
     public String getRecipeText() {
-        return this.root.getRecipeBody();
+        return this.text;
     }
     
     public void showDefault() {
