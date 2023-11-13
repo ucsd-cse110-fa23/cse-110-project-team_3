@@ -187,7 +187,7 @@ public class RecipeView extends Stage {
     public void setRecipeTitle(String title) {
         root.setRecipeHeader(title);
     }
-    public void setUpRecipe(String recipe, String type) throws IOException {
+    public String[] setUpRecipe(String recipe, String type) throws IOException {
         root.setType(type);
         String adjustedRecipe = recipe.trim();
         String[] split = adjustedRecipe.split("\n", 3);
@@ -199,6 +199,7 @@ public class RecipeView extends Stage {
             setRecipeTitle("error handling title");
             setRecipeText("error handling body");
         }
+        return new String[]{recipe,type};
     }
     public String getRecipeTitle() {
         return this.root.getRecipeHeader();
