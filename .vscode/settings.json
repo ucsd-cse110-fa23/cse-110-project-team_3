@@ -2,11 +2,7 @@
     "java.compile.nullAnalysis.mode": "automatic",
     "java.debug.settings.onBuildFailureProceed": true,
     "java.project.sourcePaths": [
-        "gradle/wrapper",
-        "app",
-        ".vscode",
-        ".gradle",
-        ".github",
         "lib"
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
