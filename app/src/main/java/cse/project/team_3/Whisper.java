@@ -1,5 +1,4 @@
-package cse.project.team_3;
-
+package src.main.java.cse.project.team_3;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;

@@ -6,22 +6,16 @@
     "configurations": [
         {
             "type": "java",
-            "name": "App",
+            "name": "ChatGPT",
             "request": "launch",
-            "mainClass": "cse.project.team_3.App",
-            "projectName": ""
+            "mainClass": "src.main.java.cse.project.team_3.ChatGPT",
+            "projectName": "cse-110-project-team_3_1e50c620"
         },
         {
             "type": "java",
-            "name": "Current File",
+            "name": "Reco[e",
             "request": "launch",
-            "mainClass": "${file}"
-        },
-        {
-            "type": "java",
-            "name": "App",
-            "request": "launch",
-            "mainClass": "cse.project.team_3.App",
+            "mainClass": "src.main.java.cse.project.team_3.Recipe",
             "projectName": "app",
             "vmArgs": "--module-path 'C:/Users/jdhei/OneDrive/Documents/javafx-sdk-21.0.1/lib' --add-modules javafx.controls,javafx.fxml"
         }

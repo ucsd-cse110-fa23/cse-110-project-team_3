@@ -1,5 +1,4 @@
-package cse.project.team_3;
-
+package src.main.java.cse.project.team_3;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -29,7 +28,7 @@ public class ChatGPT {
         JSONObject requestBody = new JSONObject();
         requestBody.put("model", MODEL);
         requestBody.put("prompt", prompt);
-        requestBody.put("max_tokens", 50); // You can set the desired max_tokens value
+        requestBody.put("max_tokens", 2000); // You can set the desired max_tokens value
         requestBody.put("temperature", 0.7); // You can adjust the temperature
 
         // Create the HTTP Client

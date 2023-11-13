@@ -1,5 +1,4 @@
-package cse.project.team_3;
-
+package src.main.java.cse.project.team_3;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -7,8 +6,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.shape.Path;
 import javafx.geometry.Insets;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import javax.sound.sampled.*;
 
 class AppFrame extends FlowPane {
@@ -77,6 +80,7 @@ class AppFrame extends FlowPane {
         // Stop Button
         stopButton.setOnAction(e -> {
             stopRecording();
+            ((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
         });
 
         breakfastButton.setOnAction(e -> {
@@ -144,8 +148,6 @@ class AppFrame extends FlowPane {
 
                     String transcribedText = Whisper.transcribeAudio(audioFile);
 
-                    // String stuff = "tomatos, onions, pasta";
-
                     // Add breakfast, lunch, dinner buttons to the prompt
                     //transcribedText = "Goal: " + lastSelectedMealType + ";" + stuff
                     //        + "split it into title, ingredients, instructions";
@@ -161,13 +163,14 @@ class AppFrame extends FlowPane {
                         RecipeView recipe;
                         try {
                             recipe = new RecipeView();
-                            recipe.setUpRecipe(response);
+                            recipe.setUpRecipe(response, lastSelectedMealType);
                             recipe.showDefault();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
                     });
+
                     // Do something with the response, e.g., display it in the UI
                     System.out.println("ChatGPT Response: " + response);
 
@@ -228,13 +231,9 @@ class AppFrame extends FlowPane {
 }
 
 public class Recipe extends Application {
+    static RecipeListView recipeList;
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-
-        // Setting the Layout of the Window (Flow Pane)
-        AppFrame root = new AppFrame();
-
+    public static void setupRecipe(Stage primaryStage, AppFrame root) {
         // Set the title of the app
         primaryStage.setTitle("Audio Recorder");
         // Create scene of mentioned size with the border pane
@@ -245,7 +244,27 @@ public class Recipe extends Application {
         primaryStage.show();
     }
 
+    public static void sendRecipeFields(String fileName) throws IOException {
+            java.nio.file.Path path = Paths.get(fileName);
+            String output = Files.readString(path);
+            String[] split = output.split("\n", 4);
+            recipeList.createRecipe(split[0], split[1], split[2], split[3]);
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+
+        // Setting the Layout of the Window (Flow Pane)
+        //AppFrame root = new AppFrame();
+        //setupRecipe(primaryStage, root);
+        
+
+        recipeList = new RecipeListView();
+        recipeList.start(new Stage());
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
+
 }
