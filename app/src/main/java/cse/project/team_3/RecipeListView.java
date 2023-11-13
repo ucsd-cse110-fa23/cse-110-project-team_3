@@ -387,24 +387,12 @@ public class RecipeListView extends Application {
     }
     
     public void populateWithExistingRecipes() throws FileNotFoundException, IOException {
+        
         /*
-        List<List<String>> recipes = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("Recipes.csv"))) {
-            String recipeInfo;
-            while ((recipeInfo = br.readLine()) != null) {
-                String[] values = recipeInfo.split(",");
-                recipes.add(Arrays.asList(values));
-            }
-        }
-        for (List<String> recipe : recipes) {
-            String title = recipe.get(0);
-            String type = recipe.get(1);
-            String date = recipe.get(2);
-            String body = recipe.get(3);
-            createRecipe(title, type, date, body);
-        }
-        */
-
+         *  I modeled this method after an algorithm found at this URL
+         *  URL to Source: https://stackoverflow.com/questions/6786708/reading-from-a-file-until-specific-character-in-java
+         *  Date Accessed: 11/12/2023
+         */
         List<List<String>> recipes = new ArrayList<>();
         
         BufferedReader br = new BufferedReader(new FileReader("src/main/java/cse/project/team_3/Recipes.csv"));
