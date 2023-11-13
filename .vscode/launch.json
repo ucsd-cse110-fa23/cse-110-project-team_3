@@ -6,14 +6,7 @@
     "configurations": [
         {
             "type": "java",
-            "name": "ChatGPT",
-            "request": "launch",
-            "mainClass": "src.main.java.cse.project.team_3.ChatGPT",
-            "projectName": "cse-110-project-team_3_1e50c620"
-        },
-        {
-            "type": "java",
-            "name": "Reco[e",
+            "name": "Recipe",
             "request": "launch",
             "mainClass": "src.main.java.cse.project.team_3.Recipe",
             "projectName": "app",
