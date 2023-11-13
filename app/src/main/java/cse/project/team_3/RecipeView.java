@@ -1,10 +1,15 @@
-package cse.project.team_3;
-
+package src.main.java.cse.project.team_3;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -14,19 +19,21 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 
 class RecipeBody extends VBox {
-    Text text;
+    TextArea text;
     RecipeBody(String recipe) throws IOException {
-        text = new Text(recipe);
-        text.setWrappingWidth(600);
+        text = new TextArea(recipe);
+        text.setPrefSize(700, 700);
+        text.setWrapText(true);
+        text.setMaxWidth(600);
         this.getChildren().add(text);
         VBox.setMargin(text, new Insets(20, 20, 20, 20));
         this.setStyle("-fx-font-size: 15;");
     }
     public void setText(String text) {
-        this.text = new Text(text);
+        this.text = new TextArea(text);
     }
     public String getText() {
-        return text.toString();
+        return text.getText();
     }
 }
 
@@ -61,19 +68,21 @@ class RecipeFooter extends HBox {
 }
 
 class RecipeHeader extends HBox {
-    Text titleText;
+    TextField titleText;
 
     RecipeHeader(String title) {
         this.setPrefSize(500, 60); // Size of the header
         this.setStyle("-fx-background-color: #F0F8FF;");
 
-        titleText = new Text(title); // Text of the Header
+        titleText = new TextField(title); // Text of the Header
         titleText.setStyle("-fx-font-weight: bold; -fx-font-size: 20;");
+        titleText.setPrefSize(400, 40);
+        titleText.setAlignment(Pos.CENTER);
         this.getChildren().add(titleText);
         this.setAlignment(Pos.CENTER); // Align the text to the Center
     }
     public String getTitleText() {
-        return titleText.toString();
+        return titleText.getText();
     }
 }
 
@@ -83,11 +92,16 @@ class RecipeAppFrame extends BorderPane {
     private RecipeFooter footer;
     private RecipeBody recipe;
     private ScrollPane scroll;
+    private String type;
+    private String date;
 
     private Button saveRecipeButton;
     private Button discardRecipeButton;
 
     RecipeAppFrame() throws IOException {
+
+        type = "No Type";
+        date = "No Date";
 
         // Initialise the header Object
         header = new RecipeHeader("Recipe");
@@ -132,14 +146,30 @@ class RecipeAppFrame extends BorderPane {
     public String getRecipeHeader() {
         return this.header.getTitleText();
     }
+    public void setType(String type) {
+        this.type = type;
+    }
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     public void addListeners() {
         saveRecipeButton.setOnAction(e -> {
-            System.out.println("Save Recipe Button Clicked");
+            try {
+                String fName = "TempRecipes.txt";
+                FileWriter fWriter = new FileWriter(fName);
+                fWriter.write(getRecipeHeader() + "\n" + type + "\n" + java.time.LocalDate.now() + "\n" + getRecipeBody());
+                fWriter.write('\n');
+                fWriter.close();
+                Recipe.sendRecipeFields(fName);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }   
+            ((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
         });
 
         discardRecipeButton.setOnAction(e -> {
-            System.out.println("Discard Recipe Button Clicked");
+            ((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
         });
     }
 }
@@ -147,21 +177,18 @@ class RecipeAppFrame extends BorderPane {
 public class RecipeView extends Stage {
     Stage recipeStage;
     RecipeAppFrame root;
-    String title;
-    String text;
-    RecipeView() throws IOException {
+    public RecipeView() throws IOException {
         root = new RecipeAppFrame();
     }
 
     public void setRecipeText(String text) throws IOException {
         root.setRecipeBody(text);
-        this.text = text;
     }
     public void setRecipeTitle(String title) {
         root.setRecipeHeader(title);
-        this.title = title;
     }
-    public void setUpRecipe(String recipe) throws IOException {
+    public void setUpRecipe(String recipe, String type) throws IOException {
+        root.setType(type);
         String adjustedRecipe = recipe.trim();
         String[] split = adjustedRecipe.split("\n", 3);
         if (split.length >= 3) {
@@ -174,11 +201,17 @@ public class RecipeView extends Stage {
         }
     }
     public String getRecipeTitle() {
-        return this.title;
+        return this.root.getRecipeHeader();
     }
 
     public String getRecipeText() {
-        return this.text;
+        return this.root.getRecipeBody();
+    }
+    public void setType(String type) {
+        root.setType(type);
+    }
+    public void setDate(String date) {
+        root.setDate(date);
     }
     
     public void showDefault() {

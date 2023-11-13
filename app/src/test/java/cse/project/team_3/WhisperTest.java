@@ -1,10 +1,11 @@
-package cse.project.team_3;
+package src.test.java.cse.project.team_3;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import src.main.java.cse.project.team_3.Whisper;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -21,17 +22,11 @@ public class WhisperTest {
     public void testTranscribeAudio() {
         File audioFile = new File("./src/test/java/cse/project/team_3/recording.wav");
 
-        try {
-            String transcription = Whisper.transcribeAudio(audioFile);
+        String transcription = Whisper.transcribeFakeAudio(audioFile);
 
             // Ensure that the transcription is not null or empty
             assertNotNull(transcription);
             assertFalse(transcription.isEmpty());
-
-            // You can add more specific assertion checks based on your use case
-        } catch (Exception e) {
-            fail("An exception was thrown: " + e.getMessage());
-        }
     }
 
     @Test

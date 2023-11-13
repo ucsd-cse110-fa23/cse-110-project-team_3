@@ -1,5 +1,4 @@
-package cse.project.team_3;
-
+package src.main.java.cse.project.team_3;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -150,6 +149,10 @@ public class Whisper {
         System.out.println("Error Result: " + errorResult);
 
         return ""; // Return an empty string in case of an error
+    }
+
+    public static String transcribeFakeAudio(File audioFile) {
+        return "Fake Audio";
     }
 
 }

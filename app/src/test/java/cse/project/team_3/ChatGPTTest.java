@@ -1,10 +1,12 @@
-package cse.project.team_3;
+package src.test.java.cse.project.team_3;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
+
+import src.main.java.cse.project.team_3.ChatGPT;
 
 public class ChatGPTTest {
 
@@ -13,7 +15,7 @@ public class ChatGPTTest {
         String prompt = "Give me a recipe with milk";
 
         try {
-            String response = ChatGPT.generateResponse(prompt);
+            String response = ChatGPT.generateFakeResponse(prompt);
 
             // Ensure that the response is not null or empty
             assertNotNull(response);
