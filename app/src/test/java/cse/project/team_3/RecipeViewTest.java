@@ -6,6 +6,7 @@ package src.test.java.cse.project.team_3;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
@@ -20,5 +21,13 @@ class RecipeViewTest {
         // Create a mock Recipe
         RecipeView mockRecipeView = Mockito.mock(RecipeView.class);
         assertNotNull(mockRecipeView);
+    }
+    @Test
+    public void testRecipeViewSetup() throws IOException {
+        // Create a mock Recipe
+        RecipeView mockRecipeView = Mockito.mock(RecipeView.class);
+        String[] expected = {"recipe", "type"};
+        when(mockRecipeView.setUpRecipe("recipe", "type")).thenReturn(expected);
+        assertNotNull(expected);
     }
 }
