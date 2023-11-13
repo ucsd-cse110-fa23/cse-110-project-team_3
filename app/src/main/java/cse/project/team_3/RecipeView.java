@@ -1,4 +1,4 @@
-package src.main.java.cse.project.team_3;
+package cse.project.team_3;
 
 import java.io.IOException;
 
