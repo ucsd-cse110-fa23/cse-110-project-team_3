@@ -1,4 +1,4 @@
-package src.main.java.cse.project.team_3;
+package cse.project.team_3;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 
 public class RecipeGeneration {
     public static String generateFakeRecipe() throws IOException {
-        Path path = Paths.get("C:/Users/jdhei/OneDrive/Documents/GitHub/cse-110-project-team_3/recipe.txt");
+        Path path = Paths.get("recipe.txt");
         String output = Files.readString(path);
         return output;
     }
