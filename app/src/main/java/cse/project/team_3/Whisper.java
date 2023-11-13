@@ -151,4 +151,8 @@ public class Whisper {
         return ""; // Return an empty string in case of an error
     }
 
+    public static String transcribeFakeAudio(File audioFile) {
+        return "Fake Audio";
+    }
+
 }

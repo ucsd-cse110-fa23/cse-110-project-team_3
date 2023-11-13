@@ -56,5 +56,8 @@ public class ChatGPT {
         String generatedText = choices.getJSONObject(0).getString("text");
         return generatedText;
     }
+    public static String generateFakeResponse(String prompt) {
+        return "Fake Response";
+    }
 
 }
