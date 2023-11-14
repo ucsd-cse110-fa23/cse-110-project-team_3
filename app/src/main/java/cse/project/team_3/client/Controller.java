@@ -18,22 +18,22 @@ public class Controller {
     }
     
     private void handleStartButton(ActionEvent event){
-        model.startRecording("audiofile.wav");
+        String response = model.performRequest("POST", null, "audiofile.wav");
     }
 
     private void handleStopButton(ActionEvent event){
-        model.stopRecording();
+        String response = model.performRequest("PUT", null, null);
     }
 
     private void handleBreakfastButton(ActionEvent event) {
-        String lastSelectedMealType = "Breakfast";
+        String response = model.performRequest("PUT", "Breakfast", null);
     }
 
     private void handleLunchButton(ActionEvent event) {
-        String lastSelectedMealType = "Lunch";
+        String response = model.performRequest("PUT", "Lunch", null);
     }
 
     private void handleDinnerButton(ActionEvent event) {
-        String lastSelectedMealType = "Dinner";
+        String response = model.performRequest("PUT", "Dinner", null);
     }
 }

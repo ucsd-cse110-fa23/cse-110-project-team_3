@@ -3,6 +3,8 @@ package cse.project.team_3.client;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 
 public class View extends FlowPane {
@@ -66,6 +68,10 @@ public class View extends FlowPane {
 
     public void setLunchButton(EventHandler<ActionEvent> eventHandler) {
         lunchButton.setOnAction(eventHandler);
+    }
+
+    public void setDinnerButton(EventHandler<ActionEvent> eventHandler) {
+        dinnerButton.setOnAction(eventHandler);
     }
 }
 
