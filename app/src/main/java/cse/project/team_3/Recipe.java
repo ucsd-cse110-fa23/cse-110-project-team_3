@@ -1,5 +1,8 @@
 package cse.project.team_3;
 
+import cse.project.team_3.client.Controller;
+import cse.project.team_3.client.Model;
+import cse.project.team_3.client.View;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -11,111 +14,111 @@ import javafx.geometry.Insets;
 import java.io.*;
 import javax.sound.sampled.*;
 
-class AppFrame extends FlowPane {
-    private Button startButton;
-    private Button stopButton;
-    private AudioFormat audioFormat;
-    private TargetDataLine targetDataLine;
-    private Label recordingLabel;
-    private Thread recordingThread;
+// class AppFrame extends FlowPane {
+//     private Button startButton;
+//     private Button stopButton;
+//     private AudioFormat audioFormat;
+//     private TargetDataLine targetDataLine;
+//     private Label recordingLabel;
+//     private Thread recordingThread;
 
-    // Buttons for breakfast,lunch,dinner
-    private Button breakfastButton;
-    private Button lunchButton;
-    private Button dinnerButton;
-    public String lastSelectedMealType = "";
+//     // Buttons for breakfast,lunch,dinner
+//     private Button breakfastButton;
+//     private Button lunchButton;
+//     private Button dinnerButton;
+//     public String lastSelectedMealType = "";
 
-    // Set a default style for buttons and fields - background color, font size,
-    // italics
-    String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px;";
-    String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-text-fill: red; visibility: hidden";
+//     // Set a default style for buttons and fields - background color, font size,
+//     // italics
+//     String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px;";
+//     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-text-fill: red; visibility: hidden";
 
-    AppFrame() {
+//     AppFrame() {
 
-        // Set properties for the flowpane
-        this.setPrefSize(800, 800);
-        this.setPadding(new Insets(5, 0, 5, 5));
-        this.setVgap(10);
-        this.setHgap(10);
-        this.setPrefWrapLength(500);
+//         // Set properties for the flowpane
+//         this.setPrefSize(800, 800);
+//         this.setPadding(new Insets(5, 0, 5, 5));
+//         this.setVgap(10);
+//         this.setHgap(10);
+//         this.setPrefWrapLength(500);
 
-        breakfastButton = new Button("Breakfast");
-        breakfastButton.setStyle(defaultButtonStyle); // Assuming defaultButtonStyle is defined
+//         breakfastButton = new Button("Breakfast");
+//         breakfastButton.setStyle(defaultButtonStyle); // Assuming defaultButtonStyle is defined
 
-        lunchButton = new Button("Lunch");
-        lunchButton.setStyle(defaultButtonStyle);
+//         lunchButton = new Button("Lunch");
+//         lunchButton.setStyle(defaultButtonStyle);
 
-        dinnerButton = new Button("Dinner");
-        dinnerButton.setStyle(defaultButtonStyle);
+//         dinnerButton = new Button("Dinner");
+//         dinnerButton.setStyle(defaultButtonStyle);
 
-        // Add the buttons and text fields
-        startButton = new Button("Start");
-        startButton.setStyle(defaultButtonStyle);
+//         // Add the buttons and text fields
+//         startButton = new Button("Start");
+//         startButton.setStyle(defaultButtonStyle);
 
-        stopButton = new Button("Stop");
-        stopButton.setStyle(defaultButtonStyle);
+//         stopButton = new Button("Stop");
+//         stopButton.setStyle(defaultButtonStyle);
 
-        recordingLabel = new Label("Recording...");
-        recordingLabel.setStyle(defaultLabelStyle);
+//         recordingLabel = new Label("Recording...");
+//         recordingLabel.setStyle(defaultLabelStyle);
 
-        this.getChildren().addAll(breakfastButton, lunchButton, startButton, stopButton, recordingLabel);
-        // this.getChildren().addAll(startButton, stopButton, recordingLabel);
+//         this.getChildren().addAll(breakfastButton, lunchButton, startButton, stopButton, recordingLabel);
+//         // this.getChildren().addAll(startButton, stopButton, recordingLabel);
 
-        // Get the audio format
-        audioFormat = getAudioFormat();
+//         // Get the audio format
+//         audioFormat = getAudioFormat();
 
-        // Add the listeners to the buttons
-        addListeners();
-    }
+//         // Add the listeners to the buttons
+//         addListeners();
+//     }
 
-    public void addListeners() {
-        // Start Button
-        startButton.setOnAction(e -> {
-            startRecording();
-        });
+//     public void addListeners() {
+//         // Start Button
+//         startButton.setOnAction(e -> {
+//             startRecording();
+//         });
 
-        // Stop Button
-        stopButton.setOnAction(e -> {
-            stopRecording();
-        });
+//         // Stop Button
+//         stopButton.setOnAction(e -> {
+//             stopRecording();
+//         });
 
-        breakfastButton.setOnAction(e -> {
-            lastSelectedMealType = "Breakfast";
-        });
+//         breakfastButton.setOnAction(e -> {
+//             lastSelectedMealType = "Breakfast";
+//         });
 
-        lunchButton.setOnAction(e -> {
-            lastSelectedMealType = "Lunch";
-        });
+//         lunchButton.setOnAction(e -> {
+//             lastSelectedMealType = "Lunch";
+//         });
 
-        dinnerButton.setOnAction(e -> {
-            lastSelectedMealType = "Dinner";
-        });
-    }
+//         dinnerButton.setOnAction(e -> {
+//             lastSelectedMealType = "Dinner";
+//         });
+//     }
 
-    private AudioFormat getAudioFormat() {
-        // the number of samples of audio per second.
-        // 44100 represents the typical sample rate for CD-quality audio.
-        float sampleRate = 44100;
+//     private AudioFormat getAudioFormat() {
+//         // the number of samples of audio per second.
+//         // 44100 represents the typical sample rate for CD-quality audio.
+//         float sampleRate = 44100;
 
-        // the number of bits in each sample of a sound that has been digitized.
-        int sampleSizeInBits = 16;
+//         // the number of bits in each sample of a sound that has been digitized.
+//         int sampleSizeInBits = 16;
 
-        // the number of audio channels in this format (1 for mono, 2 for stereo).
-        int channels = 1;
+//         // the number of audio channels in this format (1 for mono, 2 for stereo).
+//         int channels = 1;
 
-        // whether the data is signed or unsigned.
-        boolean signed = true;
+//         // whether the data is signed or unsigned.
+//         boolean signed = true;
 
-        // whether the audio data is stored in big-endian or little-endian order.
-        boolean bigEndian = false;
+//         // whether the audio data is stored in big-endian or little-endian order.
+//         boolean bigEndian = false;
 
-        return new AudioFormat(
-                sampleRate,
-                sampleSizeInBits,
-                channels,
-                signed,
-                bigEndian);
-    }
+//         return new AudioFormat(
+//                 sampleRate,
+//                 sampleSizeInBits,
+//                 channels,
+//                 signed,
+//                 bigEndian);
+//     }
 
     private void startRecording() {
         if (recordingThread == null || !recordingThread.isAlive()) {
@@ -233,7 +236,11 @@ public class Recipe extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         // Setting the Layout of the Window (Flow Pane)
-        AppFrame root = new AppFrame();
+        // AppFrame root = new AppFrame();
+
+        Model audioRecorderModel = new Model();
+        View view = new View();
+        Controller controller = new Controller(audioRecorderModel, view);
 
         // Set the title of the app
         primaryStage.setTitle("Audio Recorder");
