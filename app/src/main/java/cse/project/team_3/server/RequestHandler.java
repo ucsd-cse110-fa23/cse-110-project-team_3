@@ -1,9 +1,7 @@
 package cse.project.team_3.server;
 
 import com.sun.net.httpserver.*;
-
 import cse.project.team_3.Whisper;
-
 import java.io.*;
 import java.net.*;
 import java.util.*;

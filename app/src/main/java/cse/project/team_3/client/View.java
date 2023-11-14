@@ -20,7 +20,8 @@ public class View extends FlowPane {
 
     // Set a default style for buttons and fields - background color, font size,
     // italics
-    String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px;";
+    String defaultVoiceInputButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px;";
+    String defaultFilterButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 113px; -fx-pref-height: 50px;";
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-text-fill: red; visibility: hidden";
 
     public View() {
@@ -29,28 +30,28 @@ public class View extends FlowPane {
         this.setPadding(new Insets(5, 0, 5, 5));
         this.setVgap(10);
         this.setHgap(10);
-        this.setPrefWrapLength(500);
+        this.setPrefWrapLength(800);
 
         breakfastButton = new Button("Breakfast");
-        breakfastButton.setStyle(defaultButtonStyle); // Assuming defaultButtonStyle is defined
+        breakfastButton.setStyle(defaultFilterButtonStyle); // Assuming defaultButtonStyle is defined
 
         lunchButton = new Button("Lunch");
-        lunchButton.setStyle(defaultButtonStyle);
+        lunchButton.setStyle(defaultFilterButtonStyle);
 
         dinnerButton = new Button("Dinner");
-        dinnerButton.setStyle(defaultButtonStyle);
+        dinnerButton.setStyle(defaultFilterButtonStyle);
 
         // Add the buttons and text fields
         startButton = new Button("Start");
-        startButton.setStyle(defaultButtonStyle);
+        startButton.setStyle(defaultVoiceInputButtonStyle);
 
         stopButton = new Button("Stop");
-        stopButton.setStyle(defaultButtonStyle);
+        stopButton.setStyle(defaultVoiceInputButtonStyle);
 
         recordingLabel = new Label("Recording...");
         recordingLabel.setStyle(defaultLabelStyle);
 
-        this.getChildren().addAll(breakfastButton, lunchButton, startButton, stopButton, recordingLabel);
+        this.getChildren().addAll(breakfastButton, lunchButton, dinnerButton, startButton, stopButton, recordingLabel);
         // this.getChildren().addAll(startButton, stopButton, recordingLabel);        
     }
 
