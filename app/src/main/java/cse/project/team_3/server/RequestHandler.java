@@ -107,6 +107,9 @@ public class RequestHandler implements HttpHandler {
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return "Error processing the request";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error processing the request";
         }
     }
 
