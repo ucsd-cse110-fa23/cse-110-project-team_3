@@ -1,6 +1,8 @@
 package cse.project.team_3.server;
 
 import com.sun.net.httpserver.*;
+
+import cse.project.team_3.ChatGPT;
 import cse.project.team_3.Whisper;
 import java.io.*;
 import java.net.*;
@@ -100,7 +102,8 @@ public class RequestHandler implements HttpHandler {
         t.sendResponseHeaders(200, 0);
         try {
             String transcriptionResult = Whisper.transcribeAudio(f);
-            return transcriptionResult;
+            String generatedRecipe = ChatGPT.generateResponse(transcriptionResult);
+            return generatedRecipe;
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return "Error processing the request";
