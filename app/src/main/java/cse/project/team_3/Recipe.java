@@ -22,9 +22,9 @@ public class Recipe extends Application {
         // Set the title of the app
         primaryStage.setTitle("Audio Recorder");
         // Create scene of mentioned size with the border pane
-        primaryStage.setScene(new Scene(view, 370, 120));
+        primaryStage.setScene(new Scene(view, 370, 200));
         // Make window non-resizable
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
         // Show the app
         primaryStage.show();
     }

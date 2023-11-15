@@ -14,6 +14,14 @@
         },
         {
             "type": "java",
+            "name": "MyServer",
+            "request": "launch",
+            "mainClass": "cse.project.team_3.server.MyServer",
+            "projectName": "app",
+            "vmArgs": "--module-path '/Users/jad/Documents/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"

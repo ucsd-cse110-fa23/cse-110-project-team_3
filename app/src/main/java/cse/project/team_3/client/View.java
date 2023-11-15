@@ -17,7 +17,6 @@ public class View extends FlowPane {
     private Button lunchButton;
     private Button dinnerButton;
 
-
     // Set a default style for buttons and fields - background color, font size,
     // italics
     String defaultVoiceInputButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px;";
@@ -26,11 +25,12 @@ public class View extends FlowPane {
 
     public View() {
         // Set properties for the flowpane
-        this.setPrefSize(800, 800);
+        this.setPrefSize(370, 400);
         this.setPadding(new Insets(5, 0, 5, 5));
         this.setVgap(10);
         this.setHgap(10);
-        this.setPrefWrapLength(800);
+        this.setPrefWrapLength(370);
+        this.setPrefHeight(100);
 
         breakfastButton = new Button("Breakfast");
         breakfastButton.setStyle(defaultFilterButtonStyle); // Assuming defaultButtonStyle is defined
@@ -52,11 +52,19 @@ public class View extends FlowPane {
         recordingLabel.setStyle(defaultLabelStyle);
 
         this.getChildren().addAll(breakfastButton, lunchButton, dinnerButton, startButton, stopButton, recordingLabel);
-        // this.getChildren().addAll(startButton, stopButton, recordingLabel);        
+        // this.getChildren().addAll(startButton, stopButton, recordingLabel);
+    }
+
+    public void setRecordingState(boolean isRecording) {
+        if (isRecording) {
+            recordingLabel.setVisible(true);
+        } else {
+            recordingLabel.setVisible(false);
+        }
     }
 
     public void setStartButtonAction(EventHandler<ActionEvent> eventHandler) {
-        startButton.setOnAction(eventHandler);        
+        startButton.setOnAction(eventHandler);
     }
 
     public void setStopButtonAction(EventHandler<ActionEvent> eventHandler) {
@@ -75,6 +83,3 @@ public class View extends FlowPane {
         dinnerButton.setOnAction(eventHandler);
     }
 }
-
-
-  

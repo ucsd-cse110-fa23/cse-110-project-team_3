@@ -15,6 +15,8 @@ public class Controller {
         this.view.setBreakfastButton(this::handleBreakfastButton);
         this.view.setLunchButton(this::handleLunchButton);
         this.view.setDinnerButton(this::handleDinnerButton);
+
+        this.model.setView(this.view);
     }
     
     private void handleStartButton(ActionEvent event){

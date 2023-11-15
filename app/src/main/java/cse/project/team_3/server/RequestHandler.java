@@ -6,16 +6,15 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-
 public class RequestHandler implements HttpHandler {
     private final Map<String, String> data;
 
     public RequestHandler(Map<String, String> data) {
-    this.data = data;
+        this.data = data;
     }
 
     @Override
-    public void handle(HttpExchange  httpExchange) throws IOException {
+    public void handle(HttpExchange httpExchange) throws IOException {
         String response = "Request Received";
         String method = httpExchange.getRequestMethod();
 
@@ -63,55 +62,81 @@ public class RequestHandler implements HttpHandler {
         return null;
     }
 
-    private String handlePost(HttpExchange httpExchange) throws IOException {
-       try {
-        // Get the boundary from the content-type header
-        Headers headers = httpExchange.getRequestHeaders();
-        String contentType = headers.getFirst("Content-Type");
-        String boundary = extractBoundary(contentType);
+    public String handlePost(HttpExchange t) throws IOException {
+        String CRLF = "\r\n";
+        int fileSize = 0;
 
-        // Process the multipart/form-data request
-        MultipartFormDataHandler formDataHandler = new MultipartFormDataHandler(httpExchange.getRequestBody(), boundary);
-
-        // Get the audio file from the form data
-        InputStream audioStream = formDataHandler.getFile("file");
-        
-        // Save the audio file to a temporary location
         String currentDirectory = System.getProperty("user.dir");
-        String audioFilePath = currentDirectory + File.separator + "audiofile.wav";
-        saveInputStreamToFile(audioStream, audioFilePath);
+        String FILE_TO_RECEIVE = currentDirectory + File.separator + "audiofile.wav";
+        File f = new File(FILE_TO_RECEIVE);
+        if (!f.exists()) {
+            f.createNewFile();
+        }
 
-        // Call Whisper to transcribe the audio file
-        String transcriptionResult = Whisper.transcribeAudio(new File(audioFilePath));
+        InputStream input = t.getRequestBody();
+        String nextLine = "";
+        do {
+            nextLine = readLine(input, CRLF);
+            if (nextLine.startsWith("Content-Length:")) {
+                fileSize = Integer.parseInt(
+                        nextLine.replaceAll(" ", "").substring(
+                                "Content-Length:".length()));
+            }
+            System.out.println(nextLine);
+        } while (!nextLine.equals(""));
 
-        // Return the transcription result as the response
-        return transcriptionResult;
-        } catch (Exception e) {
+        byte[] wavFileByteArray = new byte[fileSize];
+        int readOffset = 0;
+        while (readOffset < fileSize) {
+            int bytesRead = input.read(wavFileByteArray, readOffset, fileSize);
+            readOffset += bytesRead;
+        }
+
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(FILE_TO_RECEIVE));
+
+        bos.write(wavFileByteArray, 0, fileSize);
+        bos.flush();
+
+        t.sendResponseHeaders(200, 0);
+        try {
+            String transcriptionResult = Whisper.transcribeAudio(f);
+            return transcriptionResult;
+        } catch (URISyntaxException e) {
             e.printStackTrace();
             return "Error processing the request";
         }
     }
 
-    private String extractBoundary(String contentType) {
-        // Extract the boundary from the content-type header
-        String[] elements = contentType.split(";");
-        for (String element : elements) {
-            element = element.trim();
-            if (element.startsWith("boundary=")) {
-                return element.substring("boundary=".length());
-            }
-        }
-        return null;
-    }
+    private static String readLine(InputStream is, String lineSeparator)
+            throws IOException {
 
-    private void saveInputStreamToFile(InputStream inputStream, String filePath) throws FileNotFoundException, IOException {
-        // Save the input stream to a file
-        try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))) {
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                bos.write(buffer, 0, bytesRead);
+        int off = 0, i = 0;
+        byte[] separator = lineSeparator.getBytes("UTF-8");
+        byte[] lineBytes = new byte[1024];
+
+        while (is.available() > 0) {
+            int nextByte = is.read();
+            if (nextByte < -1) {
+                throw new IOException(
+                        "Reached end of stream while reading the current line!");
+            }
+
+            lineBytes[i] = (byte) nextByte;
+            if (lineBytes[i++] == separator[off++]) {
+                if (off == separator.length) {
+                    return new String(
+                            lineBytes, 0, i - separator.length, "UTF-8");
+                }
+            } else {
+                off = 0;
+            }
+
+            if (i == lineBytes.length) {
+                throw new IOException("Maximum line length exceeded: " + i);
             }
         }
+
+        throw new IOException(
+                "Reached end of stream while reading the current line!");
     }
 }

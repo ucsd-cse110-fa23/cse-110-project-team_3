@@ -1,8 +1,9 @@
 package cse.project.team_3.client;
 
-import javax.sound.sampled.*;
-
+import cse.project.team_3.Whisper;
 import java.io.BufferedReader;
+import java.nio.file.Files;
+import javax.sound.sampled.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,22 +13,29 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
+import java.net.URISyntaxException;
 
 public class Model {
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
     private Thread recordingThread;
-
     private Map<String, String> headers;
+    private boolean isRecording = false;
+    private View view; // Add a reference to the View
 
     public Model() {
         // Initialize headers
         headers = new HashMap<>();
         headers.put("Content-Type", "application/json"); // You can adjust the content type as needed
     }
-    
+
+    public void setView(View view) {
+        this.view = view;
+    }
+
     public String performRequest(String requestType, String mealType, String audioFileName) {
         try {
             URL url = new URL("http://localhost:8100/"); // Replace with your server endpoint
@@ -47,7 +55,7 @@ public class Model {
                     break;
                 case "PUT":
                     // Stop recording logic
-                    stopRecording();
+                    stopRecording(null);
                     break;
                 default:
                     // Handle other request types if needed
@@ -57,12 +65,6 @@ public class Model {
             // Additional logic based on mealType
             if (mealType != null) {
                 // Handle mealType logic if needed
-            }
-
-            // Send audio file if available
-            if (audioFileName != null && requestType.equals("POST")) {
-                File audioFile = new File(audioFileName);
-                sendAudioToServer(audioFile);
             }
 
             // Get the server response
@@ -92,100 +94,112 @@ public class Model {
 
         return null; // Return null if there is an error
     }
-    
+
     private void startRecording(String filePath) {
         if (recordingThread == null || !recordingThread.isAlive()) {
             recordingThread = new Thread(() -> {
+                File audioFile = new File(filePath);
+                audioFormat = getAudioFormat();
                 try {
                     DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
                     targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
                     targetDataLine.open(audioFormat);
                     targetDataLine.start();
 
-                    AudioInputStream audioInputStream = new AudioInputStream(targetDataLine);
+                    // Flag to indicate whether recording is in progress
+                    isRecording = true;
+                    view.setRecordingState(isRecording);
 
-                    File audioFile = new File(filePath);
-                    AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, audioFile);
+                    // the AudioInputStream that will be used to write the audio data to a file
+                    AudioInputStream audioInputStream = new AudioInputStream(
+                            targetDataLine);
 
-                    // Send the audio file to the server using HTTP POST
-                    sendAudioToServer(audioFile);
+                    // the file that will contain the audio data
+                    AudioSystem.write(
+                            audioInputStream,
+                            AudioFileFormat.Type.WAVE,
+                            audioFile);
+
+                    Thread.sleep(5 * 1000);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 } finally {
-                    stopRecording();
+                    stopRecording(audioFile);
                 }
             });
             recordingThread.start();
         }
     }
-    
-    public void stopRecording() {
+
+    public void stopRecording(File audioFile) {
         if (targetDataLine != null) {
             targetDataLine.stop();
             targetDataLine.close();
         }
-    }
 
-    private void sendAudioToServer(File audioFile) {
-    try {
-        // Set up the connection
-        URL url = new URL("http://localhost:8100/"); // Replace with your server endpoint
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
+        isRecording = false;
+        view.setRecordingState(isRecording);
 
-        // Set up the boundary for the multipart/form-data
-        String boundary = "Boundary-" + System.currentTimeMillis();
-        connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-
-        // Get the output stream of the connection
-        OutputStream outputStream = connection.getOutputStream();
-        PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8"), true);
-
-        // Write the file part
-        writer.append("--" + boundary).append("\r\n");
-        writer.append("Content-Disposition: form-data; name=\"file\"; filename=\"" + audioFile.getName() + "\"").append("\r\n");
-        writer.append("Content-Type: audio/wav").append("\r\n\r\n");
-        writer.flush();
-
-        // Write the audio file content
-        try (FileInputStream fileInputStream = new FileInputStream(audioFile)) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-            outputStream.flush();
-        }
-
-        // Write the closing boundary
-        writer.append("\r\n").append("--" + boundary + "--").append("\r\n");
-        writer.flush();
-
-        // Get the server response
-        int responseCode = connection.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            // Successfully sent the file to the server
-            // You can read the server response if needed
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-            reader.close();
-        } else {
-            // Handle the error case
-            System.out.println("Failed to send the file. Response Code: " + responseCode);
-        }
-
-        // Close the connection
-        connection.disconnect();
-
+        try {
+            sendPOST(audioFile);
         } catch (IOException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
+
+    private static void sendPOST(File uploadFile) throws IOException {
+        final int wav = 1;
+        final String POST_URL = "http://localhost:8100/" + wav;
+
+        String boundary = Long.toHexString(System.currentTimeMillis());
+        String CRLF = "\r\n";
+        String charset = "UTF-8";
+        URLConnection connection = new URL(POST_URL).openConnection();
+        connection.setDoOutput(true);
+        connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+        try (
+                OutputStream output = connection.getOutputStream();
+                PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, charset), true);) {
+            writer.append("--" + boundary).append(CRLF);
+            writer.append(
+                    "Content-Disposition: form-data; name=\"binaryFile\"; filename=\"" + uploadFile.getName() + "\"")
+                    .append(CRLF);
+            writer.append("Content-Length: " + uploadFile.length()).append(CRLF);
+            writer.append("Content-Type: " + URLConnection.guessContentTypeFromName(uploadFile.getName())).append(CRLF);
+            writer.append("Content-Transfer-Encoding: binary").append(CRLF);
+            writer.append(CRLF).flush();
+            Files.copy(uploadFile.toPath(), output);
+            output.flush();
+
+            int responseCode = ((HttpURLConnection) connection).getResponseCode();
+            System.out.println("Response code: [" + responseCode + "]");
+        }
+    }
+
+    private AudioFormat getAudioFormat() {
+        // the number of samples of audio per second.
+        // 44100 represents the typical sample rate for CD-quality audio.
+        float sampleRate = 44100;
+
+        // the number of bits in each sample of a sound that has been digitized.
+        int sampleSizeInBits = 16;
+
+        // the number of audio channels in this format (1 for mono, 2 for stereo).
+        int channels = 1;
+
+        // whether the data is signed or unsigned.
+        boolean signed = true;
+
+        // whether the audio data is stored in big-endian or little-endian order.
+        boolean bigEndian = false;
+
+        return new AudioFormat(
+                sampleRate,
+                sampleSizeInBits,
+                channels,
+                signed,
+                bigEndian);
+    }
 }
-
-
-
