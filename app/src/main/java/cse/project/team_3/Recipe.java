@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 package src.main.java.cse.project.team_3;
+=======
+package cse.project.team_3;
+
+import cse.project.team_3.client.Controller;
+import cse.project.team_3.client.Model;
+import cse.project.team_3.client.View;
+>>>>>>> Server-Creation
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+<<<<<<< HEAD
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
@@ -229,17 +237,32 @@ class AppFrame extends FlowPane {
         // You might need to mock objects and responses to fully test these components
     }
 }
+=======
+>>>>>>> Server-Creation
 
 public class Recipe extends Application {
     static RecipeListView recipeList;
 
+<<<<<<< HEAD
     public static void setupRecipe(Stage primaryStage, AppFrame root) {
+=======
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+
+        // Setting the Layout of the Window (Flow Pane)
+        // AppFrame root = new AppFrame();
+
+        Model audioRecorderModel = new Model();
+        View view = new View();
+        Controller controller = new Controller(audioRecorderModel, view);
+
+>>>>>>> Server-Creation
         // Set the title of the app
         primaryStage.setTitle("Audio Recorder");
         // Create scene of mentioned size with the border pane
-        primaryStage.setScene(new Scene(root, 370, 120));
+        primaryStage.setScene(new Scene(view, 370, 200));
         // Make window non-resizable
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
         // Show the app
         primaryStage.show();
     }
