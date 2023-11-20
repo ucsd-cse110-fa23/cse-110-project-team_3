@@ -1,5 +1,5 @@
 //App.java
-package src.main.java.cse.project.team_3;
+package cse.project.team_3.client;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -299,8 +299,8 @@ class RecipeListAppFrame extends BorderPane {
         // Add button functionality
         addButton.setOnAction(e -> {
 
-            AppFrame root = new AppFrame();
-            Recipe.setupRecipe(new Stage(), root);
+            // AppFrame root = new AppFrame();
+            App.setupRecipe(new Stage(), root);
         });
         saveButton.setOnAction(e -> {
             recipeList.writeToCSV();

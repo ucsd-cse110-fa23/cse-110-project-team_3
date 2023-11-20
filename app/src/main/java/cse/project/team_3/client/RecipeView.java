@@ -1,4 +1,4 @@
-package src.main.java.cse.project.team_3;
+package cse.project.team_3.client;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -161,7 +161,7 @@ class RecipeAppFrame extends BorderPane {
                 fWriter.write(getRecipeHeader() + "\n" + type + "\n" + java.time.LocalDate.now() + "\n" + getRecipeBody());
                 fWriter.write('\n');
                 fWriter.close();
-                Recipe.sendRecipeFields(fName);
+                App.sendRecipeFields(fName);
             } catch (IOException e1) {
                 e1.printStackTrace();
             }   

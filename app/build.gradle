@@ -38,7 +38,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'src.main.java.cse.project.team_3.Recipe'
+    mainClass = 'cse.project.team_3.server.MyServer'
 }
 
 tasks.named('test') {
