@@ -1,11 +1,10 @@
 package cse.project.team_3.client;
 
-import cse.project.team_3.Whisper;
 import java.io.BufferedReader;
 import java.nio.file.Files;
 import javax.sound.sampled.*;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -16,7 +15,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
-import java.net.URISyntaxException;
 
 public class Model {
     private AudioFormat audioFormat;
@@ -108,7 +106,7 @@ public class Model {
 
                     // Flag to indicate whether recording is in progress
                     isRecording = true;
-                    view.setRecordingState(isRecording);
+                    this.view.getRecipe().setRecordingState(isRecording);
 
                     // the AudioInputStream that will be used to write the audio data to a file
                     AudioInputStream audioInputStream = new AudioInputStream(
@@ -138,7 +136,7 @@ public class Model {
         }
 
         isRecording = false;
-        view.setRecordingState(isRecording);
+        this.view.getRecipe().setRecordingState(isRecording);
 
         try {
             sendPOST(audioFile);

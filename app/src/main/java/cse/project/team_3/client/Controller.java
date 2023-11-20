@@ -10,11 +10,11 @@ public class Controller {
         this.model = model;
         this.view = view;
 
-        this.view.setStartButtonAction(this::handleStartButton);
-        this.view.setStopButtonAction(this::handleStopButton);
-        this.view.setBreakfastButton(this::handleBreakfastButton);
-        this.view.setLunchButton(this::handleLunchButton);
-        this.view.setDinnerButton(this::handleDinnerButton);
+        this.view.getRecipe().getBreakfastButton().setOnAction(this::handleBreakfastButton);
+        this.view.getRecipe().getLunchButton().setOnAction(this::handleLunchButton);
+        this.view.getRecipe().getDinnerButton().setOnAction(this::handleDinnerButton);
+        this.view.getRecipe().getStartButton().setOnAction(this::handleStartButton);
+        this.view.getRecipe().getStopButton().setOnAction(this::handleStopButton);
 
         this.model.setView(this.view);
     }

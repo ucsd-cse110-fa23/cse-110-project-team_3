@@ -258,7 +258,7 @@ class RecipeListAppFrame extends BorderPane {
     private Button saveButton;
     private ComboBox<String> sortDrop;
 
-    RecipeListAppFrame() {
+    RecipeListAppFrame(Stage primaryStage, View root) {
         // Initialize the header Object
         header = new RecipeViewHeader();
 
@@ -285,7 +285,7 @@ class RecipeListAppFrame extends BorderPane {
         saveButton = footer.getSaveButton();
 
         // Call Event Listeners for the Buttons
-        addListeners();
+        addListeners(primaryStage, root);
     }
 
     public RecipeList getRecipeList() {
@@ -295,16 +295,14 @@ class RecipeListAppFrame extends BorderPane {
 
     }
 
-    public void addListeners() {
+    public void addListeners(Stage primaryStage, View root) {
         // Add button functionality
         addButton.setOnAction(e -> {
-
-            // AppFrame root = new AppFrame();
-            App.setupRecipe(new Stage(), root);
+            primaryStage.getScene().setRoot(root);
         });
         saveButton.setOnAction(e -> {
             recipeList.writeToCSV();
-            ((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
+            primaryStage.close();
         });
     }
 
@@ -381,7 +379,7 @@ public class RecipeListView extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Setting the Layout of the Window - Should contain a Header, Footer, and the RecipeList
-        root = new RecipeListAppFrame();
+        root = new RecipeListAppFrame(primaryStage, new View());
         populateWithExistingRecipes();
         setupRecipeList(primaryStage, root);
     }

@@ -38,7 +38,9 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'cse.project.team_3.server.MyServer'
+    // mainClass = 'cse.project.team_3.server.MyServer'
+    mainClass = 'cse.project.team_3.client.App'
+
 }
 
 tasks.named('test') {

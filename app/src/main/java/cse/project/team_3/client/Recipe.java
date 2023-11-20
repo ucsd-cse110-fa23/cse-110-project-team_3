@@ -2,6 +2,7 @@ package cse.project.team_3.client;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
@@ -18,11 +19,15 @@ public class Recipe extends FlowPane {
     // Set a default style for buttons and fields - background color, font size,
     // italics
     String defaultVoiceInputButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px;";
+    String defaultFilterButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 113px; -fx-pref-height: 50px;";
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-text-fill: red; visibility: hidden";
-    // Set a default style for buttons - background color, font size
-    private String defaultFilterButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 113px; -fx-pref-height: 50px;";
 
     public Recipe() {
+        // Set properties for the flowpane
+        this.setPrefSize(370, 400);
+        this.setPadding(new Insets(5, 0, 5, 5));
+        this.setVgap(10);
+        this.setHgap(10);
         this.setPrefWrapLength(370);
         this.setPrefHeight(100);
 
@@ -45,7 +50,7 @@ public class Recipe extends FlowPane {
         recordingLabel = new Label("Recording...");
         recordingLabel.setStyle(defaultLabelStyle);
 
-        this.getChildren().addAll(breakfastButton, lunchButton, dinnerButton);
+        this.getChildren().addAll(breakfastButton, lunchButton, dinnerButton, startButton, stopButton, recordingLabel);
     }
 
     public Button getBreakfastButton() {
@@ -58,6 +63,14 @@ public class Recipe extends FlowPane {
 
     public Button getDinnerButton() {
         return dinnerButton;
+    }
+
+    public Button getStartButton() {
+        return startButton;
+    }
+
+    public Button getStopButton() {
+        return stopButton;
     }
 
     public void setRecordingState(boolean isRecording) {

@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import src.main.java.cse.project.team_3.Whisper;
+import cse.project.team_3.server.Whisper;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;

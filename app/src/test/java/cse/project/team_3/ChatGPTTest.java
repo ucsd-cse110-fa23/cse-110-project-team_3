@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
-import src.main.java.cse.project.team_3.ChatGPT;
+import cse.project.team_3.server.ChatGPT;
 
 public class ChatGPTTest {
 

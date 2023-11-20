@@ -98,6 +98,9 @@ class RecipeAppFrame extends BorderPane {
     private Button saveRecipeButton;
     private Button discardRecipeButton;
 
+    private RecipeEventListener saveRecipeListener;
+    private RecipeEventListener discardRecipeListener;
+
     RecipeAppFrame() throws IOException {
 
         type = "No Type";
@@ -128,6 +131,14 @@ class RecipeAppFrame extends BorderPane {
 
         // Call Event Listeners for the Buttons
         addListeners();
+    }
+
+    public void setSaveRecipeListener(RecipeEventListener listener) {
+        this.saveRecipeListener = listener;
+    }
+
+    public void setDiscardRecipeListener(RecipeEventListener listener) {
+        this.discardRecipeListener = listener;
     }
 
     public void setRecipeBody(String text) throws IOException {
@@ -161,7 +172,11 @@ class RecipeAppFrame extends BorderPane {
                 fWriter.write(getRecipeHeader() + "\n" + type + "\n" + java.time.LocalDate.now() + "\n" + getRecipeBody());
                 fWriter.write('\n');
                 fWriter.close();
-                App.sendRecipeFields(fName);
+                // App.sendRecipeFields(fName);
+                
+                if (saveRecipeListener != null) {
+                    saveRecipeListener.handle(fName);
+                }
             } catch (IOException e1) {
                 e1.printStackTrace();
             }   
@@ -172,6 +187,11 @@ class RecipeAppFrame extends BorderPane {
             ((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
         });
     }
+}
+
+@FunctionalInterface
+interface RecipeEventListener {
+    void handle(String fileName);
 }
 
 public class RecipeView extends Stage {

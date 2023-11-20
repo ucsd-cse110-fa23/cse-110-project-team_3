@@ -12,7 +12,7 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import src.main.java.cse.project.team_3.RecipeView;
+import cse.project.team_3.client.RecipeView;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RecipeViewTest {
