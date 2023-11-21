@@ -4,6 +4,7 @@ package cse.project.team_3.client;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -258,7 +259,7 @@ class RecipeListAppFrame extends BorderPane {
     private Button saveButton;
     private ComboBox<String> sortDrop;
 
-    RecipeListAppFrame(Stage primaryStage, View root) {
+    RecipeListAppFrame() {
         // Initialize the header Object
         header = new RecipeViewHeader();
 
@@ -285,7 +286,7 @@ class RecipeListAppFrame extends BorderPane {
         saveButton = footer.getSaveButton();
 
         // Call Event Listeners for the Buttons
-        addListeners(primaryStage, root);
+        // addListeners();
     }
 
     public RecipeList getRecipeList() {
@@ -295,52 +296,36 @@ class RecipeListAppFrame extends BorderPane {
 
     }
 
-    public void addListeners(Stage primaryStage, View root) {
-        // Add button functionality
-        addButton.setOnAction(e -> {
-            primaryStage.getScene().setRoot(root);
-        });
-        saveButton.setOnAction(e -> {
-            recipeList.writeToCSV();
-            primaryStage.close();
-        });
-    }
+    // public void addListeners() {
+    //     // Add button functionality
+    //     addButton.setOnAction(e -> {
+    //         Recipe recipePrompt = new Recipe();
+    //     });
+    //     saveButton.setOnAction(e -> {
+    //         recipeList.writeToCSV();
+    //         ((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
+    //     });
+    // }
 
     public void deleteRecipe() {
         recipeList.removeRecipe();
     }
-}
 
-/*
-public class RecipeListView extends Stage {
-    Stage recipeListStage;
-    RecipeListAppFrame root;
-    RecipeListView() {
-        this.root = new RecipeListAppFrame();
-    }
-    public void showDefault() {
-        // Set the title of the app
-        //recipeListStage.setTitle("Recipe List");
-        // Create a scene of the mentioned size with the border pane
-        recipeListStage.setScene(new Scene(this.root, 750, 600));
-        // Make the window non-resizable
-        recipeListStage.setResizable(false);
-        // Show the app
-        recipeListStage.show();
+    public Button getAddButton() {
+        return addButton;
     }
 }
-*/
 
 public class RecipeListView extends Application {
     RecipeListAppFrame root;
 
     public void setupRecipeList(Stage primaryStage, RecipeListAppFrame root) {
         // Set the title of the app
-        primaryStage.setTitle("Recipe List");
+        primaryStage.setTitle("PantryPal");
         // Create a scene of the mentioned size with the border pane
         primaryStage.setScene(new Scene(root, 750, 600));
         // Make the window non-resizable
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
         // Show the app
         primaryStage.show();
     }
@@ -379,8 +364,8 @@ public class RecipeListView extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Setting the Layout of the Window - Should contain a Header, Footer, and the RecipeList
-        root = new RecipeListAppFrame(primaryStage, new View());
-        populateWithExistingRecipes();
+        root = new RecipeListAppFrame();
+        // populateWithExistingRecipes();
         setupRecipeList(primaryStage, root);
     }
     
@@ -423,5 +408,9 @@ public class RecipeListView extends Application {
             createRecipe(title.trim(), type.trim(), date.trim(), body.trim());
         }
         br.close();
+    }
+
+    public RecipeListAppFrame getAppFrame() {
+        return root;
     }
 }

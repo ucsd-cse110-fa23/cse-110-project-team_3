@@ -3,9 +3,12 @@ package cse.project.team_3.client;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
+import javafx.stage.Stage;
+import javafx.scene.control.Dialog;
 
 public class Recipe extends FlowPane {
     private Button breakfastButton;
@@ -53,6 +56,17 @@ public class Recipe extends FlowPane {
         this.getChildren().addAll(breakfastButton, lunchButton, dinnerButton, startButton, stopButton, recordingLabel);
     }
 
+    public static void setupRecipe(Stage primaryStage, Recipe recipePrompt) {
+        // Set the title of the app
+        primaryStage.setTitle("Audio Recorder");
+        // Create scene of mentioned size with the border pane
+        primaryStage.setScene(new Scene(recipePrompt, 370, 120));
+        // Make window non-resizable
+        primaryStage.setResizable(false);
+        // Show the app
+        primaryStage.show();
+    }
+    
     public Button getBreakfastButton() {
         return breakfastButton;
     }
@@ -88,4 +102,5 @@ public class Recipe extends FlowPane {
     public void setStopButtonAction(EventHandler<ActionEvent> eventHandler) {
         stopButton.setOnAction(eventHandler);
     }
+
 }
