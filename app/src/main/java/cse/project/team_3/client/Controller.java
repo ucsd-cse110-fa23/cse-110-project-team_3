@@ -1,6 +1,7 @@
 package cse.project.team_3.client;
 
 import javafx.event.ActionEvent;
+import javafx.stage.Stage;
 
 public class Controller {
     private Model model;
@@ -15,6 +16,7 @@ public class Controller {
         this.view.getRecipe().getDinnerButton().setOnAction(this::handleDinnerButton);
         this.view.getRecipe().getStartButton().setOnAction(this::handleStartButton);
         this.view.getRecipe().getStopButton().setOnAction(this::handleStopButton);
+        this.view.getRecipeListAppFrame().getAddButton().setOnAction(this::handleAddButton);
 
         this.model.setView(this.view);
     }
@@ -37,5 +39,16 @@ public class Controller {
 
     private void handleDinnerButton(ActionEvent event) {
         String response = model.performRequest("PUT", "Dinner", null);
+    }
+
+    private void handleAddButton(ActionEvent event) {
+        Recipe.setupRecipe(new Stage(), this.view.getRecipe());
+         
+        // // Create a new recipe through the controller
+        // createRecipe(
+        //         enteredDetails.getTitle(),
+        //         enteredDetails.getMealType(),
+        //         enteredDetails.getDateCreated(),
+        //         enteredDetails.getBody());
     }
 }
