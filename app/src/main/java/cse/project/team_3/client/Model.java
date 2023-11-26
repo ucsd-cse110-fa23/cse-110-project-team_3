@@ -5,6 +5,8 @@ import java.nio.file.Files;
 import javax.sound.sampled.*;
 
 import cse.project.team_3.client.AudioPrompt.AudioPromptState;
+import javafx.application.Platform;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,6 +26,8 @@ public class Model {
     private Map<String, String> headers;
     private boolean isRecording = false;
     private View view; // Add a reference to the View
+    private File mealTypeAudioFile;
+    private File ingredientAudioFile;
 
     public Model() {
         // Initialize headers
@@ -35,7 +39,7 @@ public class Model {
         this.view = view;
     }
 
-    public String performRequest(String requestType, AudioPromptState mealType, String audioFileName) {
+    public String performRequest(String requestType) {
         try {
             URL url = new URL("http://localhost:8100/"); // Replace with your server endpoint
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -50,20 +54,19 @@ public class Model {
             switch (requestType) {
                 case "POST":
                     // Start recording logic
-                    startRecording("audiofile.wav");
+                    if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.FILTER) {
+                        startRecording("mealTypeAudio.wav");
+                    } else if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.INGREDIENTS) {
+                        startRecording("ingredientAudio.wav");
+                    }
                     break;
                 case "PUT":
                     // Stop recording logic
-                    stopRecording(null);
+                    stopRecording();
                     break;
                 default:
                     // Handle other request types if needed
                     break;
-            }
-
-            // Additional logic based on mealType
-            if (mealType != null) {
-                // Handle mealType logic if needed
             }
 
             // Get the server response
@@ -109,6 +112,12 @@ public class Model {
                     isRecording = true;
                     this.view.getAudioPrompt().setRecordingState(isRecording);
 
+                    if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.FILTER) {
+                        mealTypeAudioFile = audioFile;
+                    } else if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.INGREDIENTS) {
+                        ingredientAudioFile = audioFile;
+                    }
+
                     // the AudioInputStream that will be used to write the audio data to a file
                     AudioInputStream audioInputStream = new AudioInputStream(
                             targetDataLine);
@@ -122,36 +131,38 @@ public class Model {
                     Thread.sleep(5 * 1000);
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                } finally {
-                    stopRecording(audioFile);
                 }
             });
             recordingThread.start();
         }
     }
 
-    public void stopRecording(File audioFile) {
+    public void stopRecording() {
         if (targetDataLine != null) {
             targetDataLine.stop();
             targetDataLine.close();
         }
 
         isRecording = false;
+    
         this.view.getAudioPrompt().setRecordingState(isRecording);
         if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.FILTER) {
             this.view.getAudioPrompt().setIngredientAction();
             this.view.getAudioPrompt().setCurrentStateBasedOnLabel();
+            try {
+                sendPOST(mealTypeAudioFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
-            this.view.getAudioPrompt().setFilterAction();
             this.view.getAudioPrompt().setCurrentStateBasedOnLabel();
+            try {
+                sendPOST(ingredientAudioFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
-        try {
-            sendPOST(audioFile);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+     
     }
 
     private static void sendPOST(File uploadFile) throws IOException {

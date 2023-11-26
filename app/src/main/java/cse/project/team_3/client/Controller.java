@@ -20,11 +20,11 @@ public class Controller {
     }
     
     private void handleStartButton(ActionEvent event){
-        String response = model.performRequest("POST", this.view.getAudioPrompt().getCurrState(), "audiofile.wav");
+        String response = model.performRequest("POST");
     }
 
     private void handleStopButton(ActionEvent event){
-        String response = model.performRequest("PUT", this.view.getAudioPrompt().getCurrState(), null);
+        String response = model.performRequest("PUT");
     }
 
     private void handleAddButton(ActionEvent event) {
