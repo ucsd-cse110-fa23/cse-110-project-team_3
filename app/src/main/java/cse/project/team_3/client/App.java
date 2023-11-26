@@ -3,7 +3,6 @@ package cse.project.team_3.client;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import javafx.scene.Scene;
 
 public class App extends Application {
 
