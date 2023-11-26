@@ -3,10 +3,7 @@ package cse.project.team_3.client;
 import java.io.BufferedReader;
 import java.nio.file.Files;
 import javax.sound.sampled.*;
-
 import cse.project.team_3.client.AudioPrompt.AudioPromptState;
-import javafx.application.Platform;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
