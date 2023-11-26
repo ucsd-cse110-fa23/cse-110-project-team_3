@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.nio.file.Files;
 import javax.sound.sampled.*;
 
+import cse.project.team_3.client.AudioPrompt.AudioPromptState;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -34,7 +35,7 @@ public class Model {
         this.view = view;
     }
 
-    public String performRequest(String requestType, String mealType, String audioFileName) {
+    public String performRequest(String requestType, AudioPromptState mealType, String audioFileName) {
         try {
             URL url = new URL("http://localhost:8100/"); // Replace with your server endpoint
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -106,7 +107,7 @@ public class Model {
 
                     // Flag to indicate whether recording is in progress
                     isRecording = true;
-                    this.view.getRecipe().setRecordingState(isRecording);
+                    this.view.getAudioPrompt().setRecordingState(isRecording);
 
                     // the AudioInputStream that will be used to write the audio data to a file
                     AudioInputStream audioInputStream = new AudioInputStream(
@@ -136,7 +137,14 @@ public class Model {
         }
 
         isRecording = false;
-        this.view.getRecipe().setRecordingState(isRecording);
+        this.view.getAudioPrompt().setRecordingState(isRecording);
+        if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.FILTER) {
+            this.view.getAudioPrompt().setIngredientAction();
+            this.view.getAudioPrompt().setCurrentStateBasedOnLabel();
+        } else {
+            this.view.getAudioPrompt().setFilterAction();
+            this.view.getAudioPrompt().setCurrentStateBasedOnLabel();
+        }
 
         try {
             sendPOST(audioFile);
