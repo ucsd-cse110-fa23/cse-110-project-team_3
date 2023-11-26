@@ -2,8 +2,6 @@ package cse.project.team_3.server;
 
 import com.sun.net.httpserver.*;
 
-import cse.project.team_3.server.ChatGPT;
-import cse.project.team_3.server.Whisper;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -68,8 +66,25 @@ public class RequestHandler implements HttpHandler {
         String CRLF = "\r\n";
         int fileSize = 0;
 
+        Headers headers = t.getRequestHeaders();
+        String contentDisposition = headers.getFirst("Content-Disposition");
+        String[] contentDispositionArray = contentDisposition.split("; ");
+        String filename = null;
+         
+        for (String content : contentDispositionArray) {
+            if (content.startsWith("filename=")) {
+                filename = content.substring("filename=".length());
+                break;
+            }
+        }
         String currentDirectory = System.getProperty("user.dir");
-        String FILE_TO_RECEIVE = currentDirectory + File.separator + "audiofile.wav";
+        String FILE_TO_RECEIVE = currentDirectory + File.separator + "";
+
+        if (filename != null && filename.length() > 2) {
+            filename = filename.substring(1, filename.length() - 1); // Remove double quotes
+            FILE_TO_RECEIVE = currentDirectory + File.separator + filename;
+        }
+        
         File f = new File(FILE_TO_RECEIVE);
         if (!f.exists()) {
             f.createNewFile();
