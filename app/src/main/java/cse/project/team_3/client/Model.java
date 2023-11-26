@@ -141,7 +141,7 @@ public class Model {
         }
 
         isRecording = false;
-    
+
         this.view.getAudioPrompt().setRecordingState(isRecording);
         if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.FILTER) {
             this.view.getAudioPrompt().setIngredientAction();
@@ -159,7 +159,7 @@ public class Model {
                 e.printStackTrace();
             }
         }
-     
+
     }
 
     private static void sendPOST(File uploadFile) throws IOException {
