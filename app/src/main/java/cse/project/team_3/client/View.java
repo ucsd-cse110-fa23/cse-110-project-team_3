@@ -4,7 +4,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 
 public class View extends FlowPane {
-    private Recipe recipe;
+    private AudioPrompt audioPrompt;
     private RecipeListView recipeListView;
     private RecipeListAppFrame recipeListAppFrame;
 
@@ -14,13 +14,13 @@ public class View extends FlowPane {
         
         recipeListAppFrame = recipeListView.getAppFrame();
 
-        recipe = new Recipe();
+        audioPrompt = new AudioPrompt();
 
         // this.getChildren().addAll(recipe);
     }
  
-    public Recipe getRecipe() {
-        return recipe;
+    public AudioPrompt getAudioPrompt() {
+        return audioPrompt;
     }
 
     public RecipeListAppFrame getRecipeListAppFrame() {
