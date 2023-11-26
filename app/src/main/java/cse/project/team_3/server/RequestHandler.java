@@ -1,7 +1,6 @@
 package cse.project.team_3.server;
 
 import com.sun.net.httpserver.*;
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -70,7 +69,7 @@ public class RequestHandler implements HttpHandler {
         String contentDisposition = headers.getFirst("Content-Disposition");
         String[] contentDispositionArray = contentDisposition.split("; ");
         String filename = null;
-         
+
         for (String content : contentDispositionArray) {
             if (content.startsWith("filename=")) {
                 filename = content.substring("filename=".length());
