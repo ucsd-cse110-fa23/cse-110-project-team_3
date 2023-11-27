@@ -1,18 +1,29 @@
 package cse.project.team_3.client;
 
 import javafx.scene.layout.FlowPane;
-import javafx.geometry.Insets;
+import javafx.stage.Stage;
 
 public class View extends FlowPane {
-    private Recipe recipe;
+    private AudioPrompt audioPrompt;
+    private RecipeListView recipeListView;
+    private RecipeListAppFrame recipeListAppFrame;
 
-    public View() {
-        recipe = new Recipe();
+    public View() throws Exception {
+        recipeListView = new RecipeListView();
+        recipeListView.start(new Stage());
+        
+        recipeListAppFrame = recipeListView.getAppFrame();
 
-        this.getChildren().addAll(recipe);
+        audioPrompt = new AudioPrompt();
+
+        // this.getChildren().addAll(recipe);
     }
  
-    public Recipe getRecipe() {
-        return recipe;
+    public AudioPrompt getAudioPrompt() {
+        return audioPrompt;
+    }
+
+    public RecipeListAppFrame getRecipeListAppFrame() {
+        return recipeListAppFrame;
     }
 }

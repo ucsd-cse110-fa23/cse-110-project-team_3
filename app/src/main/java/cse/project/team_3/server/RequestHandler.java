@@ -1,9 +1,7 @@
 package cse.project.team_3.server;
 
+import com.google.common.io.Files;
 import com.sun.net.httpserver.*;
-
-import cse.project.team_3.server.ChatGPT;
-import cse.project.team_3.server.Whisper;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -25,6 +23,8 @@ public class RequestHandler implements HttpHandler {
                 response = handleGet(httpExchange);
             } else if (method.equals("POST")) {
                 response = handlePost(httpExchange);
+            } else if (method.equals("PUT")) {
+                response = handlePut(httpExchange);
             } else {
                 throw new Exception("Not Valid Request Method");
             }
@@ -39,6 +39,10 @@ public class RequestHandler implements HttpHandler {
         OutputStream outStream = httpExchange.getResponseBody();
         outStream.write(response.getBytes());
         outStream.close();
+    }
+
+    private String handlePut(HttpExchange httpExchange) {
+        return "PUT request handled";
     }
 
     private String handleGet(HttpExchange httpExchange) throws IOException {
@@ -69,10 +73,10 @@ public class RequestHandler implements HttpHandler {
         int fileSize = 0;
 
         String currentDirectory = System.getProperty("user.dir");
-        String FILE_TO_RECEIVE = currentDirectory + File.separator + "audiofile.wav";
-        File f = new File(FILE_TO_RECEIVE);
-        if (!f.exists()) {
-            f.createNewFile();
+        String combinedFilePath = currentDirectory + File.separator + "combinedAudio.wav";
+        File combinedAudioFile = new File(combinedFilePath);
+        if (!combinedAudioFile.exists()) {
+            return "Combined audio file not available";
         }
 
         InputStream input = t.getRequestBody();
@@ -94,14 +98,14 @@ public class RequestHandler implements HttpHandler {
             readOffset += bytesRead;
         }
 
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(FILE_TO_RECEIVE));
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(combinedAudioFile));
 
         bos.write(wavFileByteArray, 0, fileSize);
         bos.flush();
 
         t.sendResponseHeaders(200, 0);
         try {
-            String transcriptionResult = Whisper.transcribeAudio(f);
+            String transcriptionResult = Whisper.transcribeAudio(combinedAudioFile);
             System.out.println("Transcribed Audio: \n" + transcriptionResult);
             String generatedRecipe = ChatGPT.generateResponse(transcriptionResult);
             System.out.println("Generated Recipe: \n" + generatedRecipe);

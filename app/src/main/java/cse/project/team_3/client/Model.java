@@ -3,11 +3,12 @@ package cse.project.team_3.client;
 import java.io.BufferedReader;
 import java.nio.file.Files;
 import javax.sound.sampled.*;
-
+import cse.project.team_3.client.AudioPrompt.AudioPromptState;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.SequenceInputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
@@ -23,6 +24,8 @@ public class Model {
     private Map<String, String> headers;
     private boolean isRecording = false;
     private View view; // Add a reference to the View
+    private File mealTypeAudioFile;
+    private File ingredientAudioFile;
 
     public Model() {
         // Initialize headers
@@ -34,7 +37,7 @@ public class Model {
         this.view = view;
     }
 
-    public String performRequest(String requestType, String mealType, String audioFileName) {
+    public String performRequest(String requestType) {
         try {
             URL url = new URL("http://localhost:8100/"); // Replace with your server endpoint
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -49,20 +52,19 @@ public class Model {
             switch (requestType) {
                 case "POST":
                     // Start recording logic
-                    startRecording("audiofile.wav");
+                    if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.FILTER) {
+                        startRecording("mealTypeAudio.wav");
+                    } else if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.INGREDIENTS) {
+                        startRecording("ingredientAudio.wav");
+                    }
                     break;
                 case "PUT":
                     // Stop recording logic
-                    stopRecording(null);
+                    stopRecording();
                     break;
                 default:
                     // Handle other request types if needed
                     break;
-            }
-
-            // Additional logic based on mealType
-            if (mealType != null) {
-                // Handle mealType logic if needed
             }
 
             // Get the server response
@@ -106,7 +108,13 @@ public class Model {
 
                     // Flag to indicate whether recording is in progress
                     isRecording = true;
-                    this.view.getRecipe().setRecordingState(isRecording);
+                    this.view.getAudioPrompt().setRecordingState(isRecording);
+
+                    if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.FILTER) {
+                        mealTypeAudioFile = audioFile;
+                    } else if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.INGREDIENTS) {
+                        ingredientAudioFile = audioFile;
+                    }
 
                     // the AudioInputStream that will be used to write the audio data to a file
                     AudioInputStream audioInputStream = new AudioInputStream(
@@ -121,29 +129,68 @@ public class Model {
                     Thread.sleep(5 * 1000);
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                } finally {
-                    stopRecording(audioFile);
                 }
             });
             recordingThread.start();
         }
     }
 
-    public void stopRecording(File audioFile) {
+    public void stopRecording() {
         if (targetDataLine != null) {
             targetDataLine.stop();
             targetDataLine.close();
         }
 
         isRecording = false;
-        this.view.getRecipe().setRecordingState(isRecording);
+        this.view.getAudioPrompt().setRecordingState(isRecording);
+
+        if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.FILTER) {
+            this.view.getAudioPrompt().setIngredientAction();
+            this.view.getAudioPrompt().setCurrentStateBasedOnLabel();
+        } else {
+            try {
+                // Check if both mealTypeAudioFile and ingredientAudioFile is null before
+                // combining
+                if (mealTypeAudioFile != null && ingredientAudioFile != null) {
+                    combineAndSendAudioFiles(mealTypeAudioFile, ingredientAudioFile);
+                } else {
+                    // Handle the case where ingredientAudioFile is not available
+                    System.out.println("Both audio files need to be created.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            this.view.getAudioPrompt().setFilterAction();
+            this.view.getAudioPrompt().setCurrentStateBasedOnLabel();
+        }
+
+    }
+
+    private void combineAndSendAudioFiles(File mealTypeAudioFile, File ingredientAudioFile) throws IOException {
+        // Combine the two audio files into a single file
+        File combinedAudioFile = new File("combinedAudio.wav");
 
         try {
-            sendPOST(audioFile);
-        } catch (IOException e) {
+            AudioInputStream mealTypeStream = AudioSystem.getAudioInputStream(mealTypeAudioFile);
+            AudioInputStream ingredientStream = AudioSystem.getAudioInputStream(ingredientAudioFile);
+
+            AudioInputStream combinedStream = new AudioInputStream(
+                    new SequenceInputStream(mealTypeStream, ingredientStream),
+                    mealTypeStream.getFormat(),
+                    mealTypeStream.getFrameLength() + ingredientStream.getFrameLength());
+
+            // Write the combined audio to the file
+            AudioSystem.write(
+                    combinedStream,
+                    AudioFileFormat.Type.WAVE,
+                    combinedAudioFile);
+        } catch (UnsupportedAudioFileException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+        // Send the combined audio file to the server
+        sendPOST(combinedAudioFile);
     }
 
     private static void sendPOST(File uploadFile) throws IOException {
