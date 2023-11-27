@@ -1,5 +1,6 @@
 package cse.project.team_3.server;
 
+import com.google.common.io.Files;
 import com.sun.net.httpserver.*;
 import java.io.*;
 import java.net.*;
@@ -22,6 +23,8 @@ public class RequestHandler implements HttpHandler {
                 response = handleGet(httpExchange);
             } else if (method.equals("POST")) {
                 response = handlePost(httpExchange);
+            } else if (method.equals("PUT")) {
+                response = handlePut(httpExchange);
             } else {
                 throw new Exception("Not Valid Request Method");
             }
@@ -36,6 +39,10 @@ public class RequestHandler implements HttpHandler {
         OutputStream outStream = httpExchange.getResponseBody();
         outStream.write(response.getBytes());
         outStream.close();
+    }
+
+    private String handlePut(HttpExchange httpExchange) {
+        return "PUT request handled";
     }
 
     private String handleGet(HttpExchange httpExchange) throws IOException {
@@ -65,28 +72,11 @@ public class RequestHandler implements HttpHandler {
         String CRLF = "\r\n";
         int fileSize = 0;
 
-        Headers headers = t.getRequestHeaders();
-        String contentDisposition = headers.getFirst("Content-Disposition");
-        String[] contentDispositionArray = contentDisposition.split("; ");
-        String filename = null;
-
-        for (String content : contentDispositionArray) {
-            if (content.startsWith("filename=")) {
-                filename = content.substring("filename=".length());
-                break;
-            }
-        }
         String currentDirectory = System.getProperty("user.dir");
-        String FILE_TO_RECEIVE = currentDirectory + File.separator + "";
-
-        if (filename != null && filename.length() > 2) {
-            filename = filename.substring(1, filename.length() - 1); // Remove double quotes
-            FILE_TO_RECEIVE = currentDirectory + File.separator + filename;
-        }
-        
-        File f = new File(FILE_TO_RECEIVE);
-        if (!f.exists()) {
-            f.createNewFile();
+        String combinedFilePath = currentDirectory + File.separator + "combinedAudio.wav";
+        File combinedAudioFile = new File(combinedFilePath);
+        if (!combinedAudioFile.exists()) {
+            return "Combined audio file not available";
         }
 
         InputStream input = t.getRequestBody();
@@ -108,14 +98,14 @@ public class RequestHandler implements HttpHandler {
             readOffset += bytesRead;
         }
 
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(FILE_TO_RECEIVE));
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(combinedAudioFile));
 
         bos.write(wavFileByteArray, 0, fileSize);
         bos.flush();
 
         t.sendResponseHeaders(200, 0);
         try {
-            String transcriptionResult = Whisper.transcribeAudio(f);
+            String transcriptionResult = Whisper.transcribeAudio(combinedAudioFile);
             System.out.println("Transcribed Audio: \n" + transcriptionResult);
             String generatedRecipe = ChatGPT.generateResponse(transcriptionResult);
             System.out.println("Generated Recipe: \n" + generatedRecipe);

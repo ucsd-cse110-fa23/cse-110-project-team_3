@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.SequenceInputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
@@ -141,25 +142,55 @@ public class Model {
         }
 
         isRecording = false;
-
         this.view.getAudioPrompt().setRecordingState(isRecording);
+
         if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.FILTER) {
             this.view.getAudioPrompt().setIngredientAction();
             this.view.getAudioPrompt().setCurrentStateBasedOnLabel();
-            try {
-                sendPOST(mealTypeAudioFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         } else {
-            this.view.getAudioPrompt().setCurrentStateBasedOnLabel();
             try {
-                sendPOST(ingredientAudioFile);
+                // Check if both mealTypeAudioFile and ingredientAudioFile is null before
+                // combining
+                if (mealTypeAudioFile != null && ingredientAudioFile != null) {
+                    combineAndSendAudioFiles(mealTypeAudioFile, ingredientAudioFile);
+                } else {
+                    // Handle the case where ingredientAudioFile is not available
+                    System.out.println("Both audio files need to be created.");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            this.view.getAudioPrompt().setFilterAction();
+            this.view.getAudioPrompt().setCurrentStateBasedOnLabel();
         }
 
+    }
+
+    private void combineAndSendAudioFiles(File mealTypeAudioFile, File ingredientAudioFile) throws IOException {
+        // Combine the two audio files into a single file
+        File combinedAudioFile = new File("combinedAudio.wav");
+
+        try {
+            AudioInputStream mealTypeStream = AudioSystem.getAudioInputStream(mealTypeAudioFile);
+            AudioInputStream ingredientStream = AudioSystem.getAudioInputStream(ingredientAudioFile);
+
+            AudioInputStream combinedStream = new AudioInputStream(
+                    new SequenceInputStream(mealTypeStream, ingredientStream),
+                    mealTypeStream.getFormat(),
+                    mealTypeStream.getFrameLength() + ingredientStream.getFrameLength());
+
+            // Write the combined audio to the file
+            AudioSystem.write(
+                    combinedStream,
+                    AudioFileFormat.Type.WAVE,
+                    combinedAudioFile);
+        } catch (UnsupportedAudioFileException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        // Send the combined audio file to the server
+        sendPOST(combinedAudioFile);
     }
 
     private static void sendPOST(File uploadFile) throws IOException {
