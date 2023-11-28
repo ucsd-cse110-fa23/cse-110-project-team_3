@@ -47,6 +47,5 @@ public class Controller {
         else
             //call ErrorUI
             ;
-
     }
 }
