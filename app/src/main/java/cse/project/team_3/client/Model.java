@@ -247,4 +247,9 @@ public class Model {
                 signed,
                 bigEndian);
     }
+
+    public boolean loginIsValid(){
+        // check with db to see if login is valid
+        return true;
+    }
 }

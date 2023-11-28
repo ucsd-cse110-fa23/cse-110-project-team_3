@@ -329,7 +329,7 @@ public class RecipeListView extends Application {
         root = new RecipeListAppFrame();
     }
 
-    public void setupRecipeList(Stage primaryStage, RecipeListAppFrame root) {
+    public static void setupRecipeList(Stage primaryStage, RecipeListAppFrame root) {
         // Set the title of the app
         primaryStage.setTitle("PantryPal");
         // Create a scene of the mentioned size with the border pane

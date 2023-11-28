@@ -12,12 +12,12 @@ public class App extends Application {
         // Setting the Layout of the Window (Flow Pane)
         // AppFrame root = new AppFrame();
 
-        Model audioRecorderModel = new Model();
+        Model loginModel = new Model();
         View view = new View();
-        Controller controller = new Controller(audioRecorderModel, view);
+        Controller controller = new Controller(loginModel, view);
 
-        // // Set the title of the app
-        // primaryStage.setTitle("Audio Recorder");
+        //// Set the title of the app
+        //primaryStage.setTitle("AudioRecorder");
         // // Create scene of mentioned size with the border pane
         // primaryStage.setScene(new Scene(view, 370, 200));
         // // Make window non-resizable

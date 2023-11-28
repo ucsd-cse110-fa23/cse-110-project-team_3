@@ -40,6 +40,13 @@ public class Controller {
     private void handleEnterButton(ActionEvent event) {
         // validate credentials method -> database through Model
         // conditional if true -> setup recipe UI, else -> error UI
-        RecipeListView.setupRecipeList(new Stage(), this.view.getRecipeListAppFrame())
+        
+        if (model.loginIsValid())
+            RecipeListView.setupRecipeList(new Stage(), this.view.getRecipeListAppFrame());
+            //load in saved recipe list from account
+        else
+            //call ErrorUI
+            ;
+
     }
 }
