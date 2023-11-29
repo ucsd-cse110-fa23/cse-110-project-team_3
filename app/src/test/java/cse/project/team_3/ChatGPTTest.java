@@ -1,4 +1,4 @@
-package src.test.java.cse.project.team_3;
+package cse.project.team_3;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

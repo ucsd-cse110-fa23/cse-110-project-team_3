@@ -17,7 +17,7 @@ public class App extends Application {
         Controller controller = new Controller(loginModel, view);
 
         //// Set the title of the app
-        //primaryStage.setTitle("AudioRecorder");
+        // primaryStage.setTitle("AudioRecorder");
         // // Create scene of mentioned size with the border pane
         // primaryStage.setScene(new Scene(view, 370, 200));
         // // Make window non-resizable
