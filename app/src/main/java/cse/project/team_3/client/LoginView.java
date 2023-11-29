@@ -19,6 +19,7 @@ class Login extends GridPane {
     private Button enterButton;
     private TextField userInput;
     private TextField passInput;
+    private Button createButton;
 
     Login() {
         this.setPrefSize(200, 150);
@@ -28,6 +29,7 @@ class Login extends GridPane {
         passInput = new TextField();
 
         enterButton = new Button("Enter");
+        createButton = new Button("Create Account");
 
         Label usernameLabel = new Label("Username:");
         Label passwordLabel = new Label("Password:");
@@ -37,6 +39,7 @@ class Login extends GridPane {
         this.add(userInput, 1, 0);
         this.add(passInput, 1, 1);
         this.add(enterButton, 1, 2);
+        this.add(createButton, 0, 2);
 
         // Set padding and alignment
         this.setPadding(new Insets(10));
@@ -56,6 +59,10 @@ class Login extends GridPane {
             String password = this.getPassInput().getText();
 
         });
+
+        createButton.setOnAction(e1 -> {
+
+        });
     }
 
     public TextField getUserInput() {
@@ -68,6 +75,10 @@ class Login extends GridPane {
 
     public Button getEnterButton() {
         return this.enterButton;
+    }
+
+    public Button getCreateButton() {
+        return this.createButton;
     }
 }
 

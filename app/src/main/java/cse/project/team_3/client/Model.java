@@ -284,4 +284,23 @@ public class Model {
 
         }
     }
+
+    public boolean createIsValid(String username, String password) {
+        String uri = "mongodb+srv://sminowada1:4j5atYmTK9suF0Rp@cluster0.l0dnisn.mongodb.net/?retryWrites=true&w=majority";
+        MongoClient mongoClient = MongoClients.create(uri);
+        MongoDatabase recipeDB = mongoClient.getDatabase("RecipeDB");
+        MongoCollection<Document> recipeCollection = recipeDB.getCollection("Login");
+        Document recipe = recipeCollection.find(new Document(username, password)).first();
+
+        if (recipe != null) {
+            return false;
+        }
+        // find one document with new Document
+
+        Document login = new Document("_id", new ObjectId());
+        login.append(username, password);
+        recipeCollection.insertOne(login);
+        return true;
+
+    }
 }

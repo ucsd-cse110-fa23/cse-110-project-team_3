@@ -15,6 +15,7 @@ public class Controller {
         this.view.getAudioPrompt().getStopButton().setOnAction(this::handleStopButton);
         this.view.getRecipeListAppFrame().getAddButton().setOnAction(this::handleAddButton);
         this.view.getLoginView().getloginVW().getLogin().getEnterButton().setOnAction(this::handleEnterButton);
+        this.view.getLoginView().getloginVW().getLogin().getCreateButton().setOnAction(this::handleCreateButton);
 
         this.model.setView(this.view);
     }
@@ -49,5 +50,16 @@ public class Controller {
         // load in saved recipe list from account
         else
             System.out.println("User and Pass not found");
+    }
+
+    private void handleCreateButton(ActionEvent event) {
+        String username = this.view.getLoginView().getloginVW().getLogin().getUserInput().getText();
+        String password = this.view.getLoginView().getloginVW().getLogin().getPassInput().getText();
+
+        if (model.createIsValid(username, password))
+            RecipeListView.setupRecipeList(new Stage(), this.view.getRecipeListAppFrame());
+        // load in saved recipe list from account
+        else
+            System.out.println("Already have an account");
     }
 }
