@@ -17,8 +17,9 @@ public class DallE {
 
     // Set URL of API Endpoint
     private static final String API_ENDPOINT = "https://api.openai.com/v1/images/generations";
-    private static final String API_KEY = "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"; // previous key: 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
+    private static final String API_KEY = "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"; // this key is from CSE 110 shared organization
     private static final String MODEL = "dall-e-2";
+    // previous key used in ChatGPT.java and Whisper.java: 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                                        
 
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {
