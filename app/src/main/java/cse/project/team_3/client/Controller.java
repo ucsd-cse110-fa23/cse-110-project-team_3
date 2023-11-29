@@ -14,6 +14,7 @@ public class Controller {
         this.view.getAudioPrompt().getStartButton().setOnAction(this::handleStartButton);
         this.view.getAudioPrompt().getStopButton().setOnAction(this::handleStopButton);
         this.view.getRecipeListAppFrame().getAddButton().setOnAction(this::handleAddButton);
+        this.view.getLoginView().getloginVW().getLogin().getEnterButton().setOnAction(this::handleEnterButton);
 
         this.model.setView(this.view);
     }
@@ -40,12 +41,13 @@ public class Controller {
     private void handleEnterButton(ActionEvent event) {
         // validate credentials method -> database through Model
         // conditional if true -> setup recipe UI, else -> error UI
-        
-        if (model.loginIsValid())
+        String username = this.view.getLoginView().getloginVW().getLogin().getUserInput().getText();
+        String password = this.view.getLoginView().getloginVW().getLogin().getPassInput().getText();
+
+        if (model.loginIsValid(username, password))
             RecipeListView.setupRecipeList(new Stage(), this.view.getRecipeListAppFrame());
-            //load in saved recipe list from account
+        // load in saved recipe list from account
         else
-            //call ErrorUI
-            ;
+            System.out.println("User and Pass not found");
     }
 }

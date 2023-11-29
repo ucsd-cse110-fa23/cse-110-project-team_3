@@ -23,6 +23,10 @@ public class View extends FlowPane {
         // this.getChildren().addAll(recipe);
     }
 
+    public LoginView getLoginView() {
+        return loginView;
+    }
+
     public AudioPrompt getAudioPrompt() {
         return audioPrompt;
     }

@@ -5,6 +5,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -49,6 +50,12 @@ class Login extends GridPane {
         enterButton.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 2px; -fx-border-color: #333333;");
         enterButton.setPrefSize(80, 20);
         enterButton.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+
+        enterButton.setOnAction(e1 -> {
+            String username = this.getUserInput().getText();
+            String password = this.getPassInput().getText();
+
+        });
     }
 
     public TextField getUserInput() {
@@ -71,6 +78,10 @@ class LoginViewWindow extends BorderPane {
         login = new Login();
         this.setCenter(login);
     }
+
+    public Login getLogin() {
+        return this.login;
+    }
 }
 
 public class LoginView extends Application {
@@ -84,4 +95,9 @@ public class LoginView extends Application {
         primaryStage.setResizable(false);
         primaryStage.show();
     }
+
+    public LoginViewWindow getloginVW() {
+        return root;
+    }
+
 }
