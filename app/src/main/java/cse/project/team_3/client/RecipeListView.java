@@ -36,7 +36,7 @@ class RecipeViewRecipe extends HBox {
     private Label recipeNameLabel;
     private Label mealTypeLabel;
     private Button viewButton;
-    //private Button editButton;
+    // private Button editButton;
     private Button deleteButton;
     private Label dateCreatedLabel;
     private int recipeIndex; // Index for sorting
@@ -67,9 +67,9 @@ class RecipeViewRecipe extends HBox {
         viewButton.setPrefSize(100, 20);
         viewButton.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0;");
 
-        //editButton = new Button("Edit");
-        //editButton.setPrefSize(60, 20);
-        //editButton.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0;");
+        // editButton = new Button("Edit");
+        // editButton.setPrefSize(60, 20);
+        // editButton.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0;");
 
         deleteButton = new Button("Delete");
         deleteButton.setPrefSize(70, 20);
@@ -93,10 +93,10 @@ class RecipeViewRecipe extends HBox {
     }
 
     /*
-    public Button getEditButton() {
-        return editButton;
-    }
-    */
+     * public Button getEditButton() {
+     * return editButton;
+     * }
+     */
 
     public Button getDeleteButton() {
         return deleteButton;
@@ -122,18 +122,20 @@ class RecipeViewRecipe extends HBox {
     public void toDelete() {
         this.toDelete = true;
     }
+
     public boolean isDelete() {
         return toDelete;
     }
+
     public String[] getCSVFields() {
-        String[] toReturn = {recipeNameLabel.getText(), mealTypeLabel.getText(), dateCreatedLabel.getText(), body};
+        String[] toReturn = { recipeNameLabel.getText(), mealTypeLabel.getText(), dateCreatedLabel.getText(), body };
         return toReturn;
     }
+
     public String getBody() {
         return body;
     }
 }
-
 
 class RecipeList extends VBox {
     RecipeList() {
@@ -175,9 +177,11 @@ class RecipeList extends VBox {
     }
 
     public void removeRecipe() {
-        this.getChildren().removeIf(recipe -> recipe instanceof RecipeViewRecipe && ((RecipeViewRecipe) recipe).isDelete());
+        this.getChildren()
+                .removeIf(recipe -> recipe instanceof RecipeViewRecipe && ((RecipeViewRecipe) recipe).isDelete());
         this.updateRecipeIndices();
     }
+
     public void writeToCSV() {
         try {
             String fName = "src/main/java/cse/project/team_3/Recipes.csv";
@@ -190,7 +194,7 @@ class RecipeList extends VBox {
                     fWriter.write('\n');
                 }
             }
-        fWriter.close();
+            fWriter.close();
 
         } catch (Exception e) {
             // TODO: handle exception
@@ -233,6 +237,7 @@ class RecipeViewFooter extends HBox {
     public ComboBox<String> getSortDrop() {
         return sortDrop;
     }
+
     public Button getSaveButton() {
         return saveButton;
     }
@@ -247,7 +252,7 @@ class RecipeViewHeader extends HBox {
         titleText.setStyle("-fx-font-weight: bold; -fx-font-size: 20;");
         this.getChildren().add(titleText);
         this.setAlignment(Pos.CENTER); // Align the text to the Center Left
-        
+
     }
 }
 
@@ -292,19 +297,20 @@ class RecipeListAppFrame extends BorderPane {
     public RecipeList getRecipeList() {
         return recipeList;
     }
+
     public void setupRecipeList() {
 
     }
 
     // public void addListeners() {
-    //     // Add button functionality
-    //     addButton.setOnAction(e -> {
-    //         Recipe recipePrompt = new Recipe();
-    //     });
-    //     saveButton.setOnAction(e -> {
-    //         recipeList.writeToCSV();
-    //         ((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
-    //     });
+    // // Add button functionality
+    // addButton.setOnAction(e -> {
+    // Recipe recipePrompt = new Recipe();
+    // });
+    // saveButton.setOnAction(e -> {
+    // recipeList.writeToCSV();
+    // ((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
+    // });
     // }
 
     public void deleteRecipe() {
@@ -317,9 +323,13 @@ class RecipeListAppFrame extends BorderPane {
 }
 
 public class RecipeListView extends Application {
-    RecipeListAppFrame root;
+    private RecipeListAppFrame root;
 
-    public void setupRecipeList(Stage primaryStage, RecipeListAppFrame root) {
+    public RecipeListView() {
+        root = new RecipeListAppFrame();
+    }
+
+    public static void setupRecipeList(Stage primaryStage, RecipeListAppFrame root) {
         // Set the title of the app
         primaryStage.setTitle("PantryPal");
         // Create a scene of the mentioned size with the border pane
@@ -336,48 +346,52 @@ public class RecipeListView extends Application {
         // Add recipe to recipelist
         root.getRecipeList().getChildren().add(recipe);
         Button deleteButton = recipe.getDeleteButton();
-            deleteButton.setOnAction(e1 -> {
+        deleteButton.setOnAction(e1 -> {
+            recipe.toDelete();
+            root.deleteRecipe();
+        });
+        Button viewButton = recipe.getViewButton();
+        viewButton.setOnAction(e1 -> {
+            try {
+                RecipeView recipeView = new RecipeView();
+                recipeView.setRecipeTitle((recipe.getRecipeName().getText()));
+                recipeView.setRecipeText(recipe.getBody());
+                recipeView.setType(type);
+                recipeView.setDate(date);
+                recipeView.showDefault();
                 recipe.toDelete();
                 root.deleteRecipe();
-            });
-        Button viewButton = recipe.getViewButton();
-            viewButton.setOnAction(e1 -> {
-                try {
-                    RecipeView recipeView = new RecipeView();
-                    recipeView.setRecipeTitle((recipe.getRecipeName().getText()));
-                    recipeView.setRecipeText(recipe.getBody());
-                    recipeView.setType(type);
-                    recipeView.setDate(date);
-                    recipeView.showDefault();
-                    recipe.toDelete();
-                    root.deleteRecipe();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                
-            });
-        
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        });
+
         // Update task indices
         root.getRecipeList().updateRecipeIndices();
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Setting the Layout of the Window - Should contain a Header, Footer, and the RecipeList
-        root = new RecipeListAppFrame();
+        // // Setting the Layout of the Window - Should contain a Header, Footer, and
+        // the
+        // // RecipeList
+        // root = new RecipeListAppFrame();
         // populateWithExistingRecipes();
         setupRecipeList(primaryStage, root);
     }
-    
+
     public void populateWithExistingRecipes() throws FileNotFoundException, IOException {
-        
+
         /*
-         *  I modeled this method after an algorithm found at this URL
-         *  URL to Source: https://stackoverflow.com/questions/6786708/reading-from-a-file-until-specific-character-in-java
-         *  Date Accessed: 11/12/2023
+         * I modeled this method after an algorithm found at this URL
+         * URL to Source:
+         * https://stackoverflow.com/questions/6786708/reading-from-a-file-until-
+         * specific-character-in-java
+         * Date Accessed: 11/12/2023
          */
         List<List<String>> recipes = new ArrayList<>();
-        
+
         BufferedReader br = new BufferedReader(new FileReader("src/main/java/cse/project/team_3/Recipes.csv"));
         int ch;
         int count = 0;
@@ -390,15 +404,14 @@ public class RecipeListView extends Application {
                     System.out.println();
                     sb.setLength(0);
                     count = 0;
-                }
-                else {
+                } else {
                     count++;
                 }
-                
+
             } else {
-                sb.append((char)ch);
-            } 
-            
+                sb.append((char) ch);
+            }
+
         }
         for (List<String> recipe : recipes) {
             String title = recipe.get(0);
