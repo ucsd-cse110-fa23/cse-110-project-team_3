@@ -1,4 +1,4 @@
-package src.test.java.cse.project.team_3;
+package cse.project.team_3;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -24,9 +24,9 @@ public class WhisperTest {
 
         String transcription = Whisper.transcribeFakeAudio(audioFile);
 
-            // Ensure that the transcription is not null or empty
-            assertNotNull(transcription);
-            assertFalse(transcription.isEmpty());
+        // Ensure that the transcription is not null or empty
+        assertNotNull(transcription);
+        assertFalse(transcription.isEmpty());
     }
 
     @Test

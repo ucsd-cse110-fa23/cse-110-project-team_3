@@ -34,6 +34,8 @@ dependencies {
     implementation 'org.json:json:20230227'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    
+    implementation 'org.mongodb:mongodb-driver-sync:4.11.0'
 }
 
 application {

@@ -16,6 +16,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
+import com.mongodb.client.*;
+import org.bson.Document;
+import org.bson.types.ObjectId;
 
 public class Model {
     private AudioFormat audioFormat;
@@ -246,5 +249,58 @@ public class Model {
                 channels,
                 signed,
                 bigEndian);
+    }
+
+    public boolean loginIsValid(String username, String password) {
+        // check with db to see if login is valid
+        String uri = "mongodb+srv://sminowada1:4j5atYmTK9suF0Rp@cluster0.l0dnisn.mongodb.net/?retryWrites=true&w=majority";
+        /*
+         * ADDS TO DATABASE
+         * try (MongoClient mongoClient = MongoClients.create(uri)) {
+         * MongoDatabase recipeDB = mongoClient.getDatabase("RecipeDB");
+         * MongoCollection<Document> recipeCollection = recipeDB.getCollection("Login");
+         * Document recipe = new Document("_id", new ObjectId());
+         * recipe.append("TestUser", "TestPass")
+         * .append("Recipe Title", "Green Eggs and Ham")
+         * .append("Directions", "cook eggs and ham then dye green");
+         * recipeCollection.insertOne(recipe);
+         * }
+         */
+        // Query login info
+        // Currently have a dummy profile
+        // User: TestUser
+        // Pass: TestPass
+        try (MongoClient mongoClient = MongoClients.create(uri)) {
+            MongoDatabase recipeDB = mongoClient.getDatabase("RecipeDB");
+            MongoCollection<Document> recipeCollection = recipeDB.getCollection("Login");
+
+            // find one document with new Document
+            Document recipe = recipeCollection.find(new Document(username, password)).first();
+            if (recipe != null) {
+                System.out.println("Recipe: " + recipe.toJson());
+                return true;
+            }
+            return false;
+
+        }
+    }
+
+    public boolean createIsValid(String username, String password) {
+        String uri = "mongodb+srv://sminowada1:4j5atYmTK9suF0Rp@cluster0.l0dnisn.mongodb.net/?retryWrites=true&w=majority";
+        MongoClient mongoClient = MongoClients.create(uri);
+        MongoDatabase recipeDB = mongoClient.getDatabase("RecipeDB");
+        MongoCollection<Document> recipeCollection = recipeDB.getCollection("Login");
+        Document recipe = recipeCollection.find(new Document(username, password)).first();
+
+        if (recipe != null) {
+            return false;
+        }
+        // find one document with new Document
+
+        Document login = new Document("_id", new ObjectId());
+        login.append(username, password);
+        recipeCollection.insertOne(login);
+        return true;
+
     }
 }
