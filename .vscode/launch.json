@@ -10,7 +10,6 @@
             "request": "launch",
             "mainClass": "cse.project.team_3.client.App",
             "projectName": "app",
-            //"vmArgs": "--module-path '/Users/seijiminowada/Desktop/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
             "vmArgs": "--module-path '/Users/jad/Documents/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
         },
         {
@@ -19,7 +18,6 @@
             "request": "launch",
             "mainClass": "cse.project.team_3.server.MyServer",
             "projectName": "app",
-            //"vmArgs": "--module-path '/Users/seijiminowada/Desktop/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
             "vmArgs": "--module-path '/Users/jad/Documents/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
         },
         {
@@ -27,7 +25,6 @@
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}",
-            //vmArgs": "--module-path '/Users/seijiminowada/Desktop/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
             "vmArgs": "--module-path '/Users/jad/Documents/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
         }
         // {
