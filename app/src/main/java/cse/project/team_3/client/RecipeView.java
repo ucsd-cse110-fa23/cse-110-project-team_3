@@ -1,4 +1,5 @@
 package cse.project.team_3.client;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,12 +16,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 
 class RecipeBody extends VBox {
     TextArea text;
-    RecipeBody(String recipe) throws IOException {
+    RecipeBody(String recipe) {
         text = new TextArea(recipe);
         text.setPrefSize(700, 700);
         text.setWrapText(true);
@@ -90,33 +92,24 @@ class RecipeAppFrame extends BorderPane {
 
     private RecipeHeader header;
     private RecipeFooter footer;
-    private RecipeBody recipe;
+    private RecipeBody recipeBody;
     private ScrollPane scroll;
-    private String type;
-    private String date;
-
     private Button saveRecipeButton;
     private Button discardRecipeButton;
 
-    private RecipeEventListener saveRecipeListener;
-    private RecipeEventListener discardRecipeListener;
-
-    RecipeAppFrame() throws IOException {
-
-        type = "No Type";
-        date = "No Date";
+    RecipeAppFrame(Recipe recipe) {
 
         // Initialise the header Object
         header = new RecipeHeader("Recipe");
 
         // Create a tasklist Object to hold the tasks
-        recipe = new RecipeBody("Default Text");
+        recipeBody = new RecipeBody("Default Text");
 
         // Initialise the Footer Object
         footer = new RecipeFooter();
 
         scroll = new ScrollPane();
-        scroll.setContent(recipe);
+        scroll.setContent(recipeBody);
 
         // Add header to the top of the BorderPane
         this.setTop(header);
@@ -129,21 +122,11 @@ class RecipeAppFrame extends BorderPane {
         saveRecipeButton = footer.getSaveRecipeButton();
         discardRecipeButton = footer.getDiscardRecipeButton();
 
-        // Call Event Listeners for the Buttons
-        addListeners();
     }
 
-    public void setSaveRecipeListener(RecipeEventListener listener) {
-        this.saveRecipeListener = listener;
-    }
-
-    public void setDiscardRecipeListener(RecipeEventListener listener) {
-        this.discardRecipeListener = listener;
-    }
-
-    public void setRecipeBody(String text) throws IOException {
-        recipe = new RecipeBody(text);
-        scroll.setContent(recipe);
+    public void setRecipeBody(String text) {
+        recipeBody = new RecipeBody(text);
+        scroll.setContent(recipeBody);
     }
 
     public void setRecipeHeader(String text) {
@@ -151,97 +134,47 @@ class RecipeAppFrame extends BorderPane {
         this.setTop(header);
     }
 
-    public String getRecipeBody() {
-        return this.recipe.getText();
-    }
-    public String getRecipeHeader() {
-        return this.header.getTitleText();
-    }
-    public void setType(String type) {
-        this.type = type;
-    }
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public void addListeners() {
-        saveRecipeButton.setOnAction(e -> {
-            try {
-                String fName = "TempRecipes.txt";
-                FileWriter fWriter = new FileWriter(fName);
-                fWriter.write(getRecipeHeader() + "\n" + type + "\n" + java.time.LocalDate.now() + "\n" + getRecipeBody());
-                fWriter.write('\n');
-                fWriter.close();
-                // App.sendRecipeFields(fName);
-                
-                if (saveRecipeListener != null) {
-                    saveRecipeListener.handle(fName);
-                }
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }   
-            ((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
-        });
-
-        discardRecipeButton.setOnAction(e -> {
-            ((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
-        });
-    }
-}
-
-@FunctionalInterface
-interface RecipeEventListener {
-    void handle(String fileName);
-}
-
-public class RecipeView extends Stage {
-    Stage recipeStage;
-    RecipeAppFrame root;
-    public RecipeView() throws IOException {
-        root = new RecipeAppFrame();
-    }
-
-    public void setRecipeText(String text) throws IOException {
-        root.setRecipeBody(text);
-    }
-    public void setRecipeTitle(String title) {
-        root.setRecipeHeader(title);
-    }
-    public String[] setUpRecipe(String recipe, String type) throws IOException {
-        root.setType(type);
-        String adjustedRecipe = recipe.trim();
-        String[] split = adjustedRecipe.split("\n", 3);
-        if (split.length >= 3) {
-            setRecipeTitle(split[0]);
-            setRecipeText(split[2]);
-        }
-        else {
-            setRecipeTitle("error handling title");
-            setRecipeText("error handling body");
-        }
-        return new String[]{recipe,type};
-    }
-    public String getRecipeTitle() {
-        return this.root.getRecipeHeader();
-    }
-
-    public String getRecipeText() {
-        return this.root.getRecipeBody();
-    }
-    public void setType(String type) {
-        root.setType(type);
-    }
-    public void setDate(String date) {
-        root.setDate(date);
+    public void buildRecipe(Recipe recipe) {
+        setRecipeBody(recipe.getBody());
+        setRecipeHeader(recipe.getTitle());
     }
     
-    public void showDefault() {
-        this.setTitle("Recipe");
+    public RecipeFooter getFooter() {
+        return footer;
+    }
+    
+}
+
+public class RecipeView extends Application {
+    Recipe recipe;
+    RecipeAppFrame root;
+    public RecipeView(Recipe recipe) {
+        this.recipe = recipe;
+    }
+    public RecipeView() {
+        this.recipe = new Recipe();
+    }
+    
+    public void setUpRecipeView(Stage primaryStage, RecipeAppFrame root) {
+        primaryStage.setTitle("Recipe");
         // Create scene of mentioned size with the border pane
-        this.setScene(new Scene(this.root, 700, 600));
+        primaryStage.setScene(new Scene(this.root, 700, 600));
         // Make window non-resizable
-        this.setResizable(false);
+        primaryStage.setResizable(false);
         // Show the app
-        this.show();
+        primaryStage.show();
+    }
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        // Setting the Layout of the Window - Should contain a Header, Footer, and the RecipeList
+        root = new RecipeAppFrame(recipe);
+        setUpRecipeView(primaryStage, root);
+        root.buildRecipe(recipe);
+    }
+    public Recipe getRecipe() {
+        return recipe;
+    }
+    public RecipeAppFrame getRoot() {
+        return root;
     }
 }

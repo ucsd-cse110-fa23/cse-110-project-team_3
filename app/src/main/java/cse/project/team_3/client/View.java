@@ -3,24 +3,20 @@ package cse.project.team_3.client;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 
-public class View extends FlowPane {
+public class View {
     private AudioPrompt audioPrompt;
     private RecipeListView recipeListView;
-    private RecipeListAppFrame recipeListAppFrame;
     private LoginView loginView;
+    private RecipeView recipeView;
 
     public View() throws Exception {
         loginView = new LoginView();
-        loginView.start(new Stage());
-
-        recipeListView = new RecipeListView();
-        // recipeListView.start(new Stage());
-
-        recipeListAppFrame = recipeListView.getAppFrame();
 
         audioPrompt = new AudioPrompt();
 
-        // this.getChildren().addAll(recipe);
+        recipeListView = new RecipeListView();
+
+        recipeView = new RecipeView();
     }
 
     public LoginView getLoginView() {
@@ -30,8 +26,14 @@ public class View extends FlowPane {
     public AudioPrompt getAudioPrompt() {
         return audioPrompt;
     }
-
-    public RecipeListAppFrame getRecipeListAppFrame() {
-        return recipeListAppFrame;
+    public RecipeListView getRecipeListView() {
+        return recipeListView;
     }
+    public RecipeView getRecipeView() {
+        return recipeView;
+    }
+    public void setRecipeView(RecipeView recipeView) {
+        this.recipeView = recipeView;
+    }
+
 }
