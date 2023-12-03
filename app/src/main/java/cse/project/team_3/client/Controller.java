@@ -2,22 +2,28 @@ package cse.project.team_3.client;
 
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
+import javafx.scene.control.Button;
 
 public class Controller {
     private Model model;
     private View view;
+    private RecipeList recipeList;
 
     public Controller(Model model, View view) {
+
         this.model = model;
         this.view = view;
+        this.recipeList = new RecipeList();
 
         this.view.getAudioPrompt().getStartButton().setOnAction(this::handleStartButton);
         this.view.getAudioPrompt().getStopButton().setOnAction(this::handleStopButton);
-        this.view.getRecipeListAppFrame().getAddButton().setOnAction(this::handleAddButton);
         this.view.getLoginView().getloginVW().getLogin().getEnterButton().setOnAction(this::handleEnterButton);
         this.view.getLoginView().getloginVW().getLogin().getCreateButton().setOnAction(this::handleCreateButton);
 
         this.model.setView(this.view);
+    }
+    public void setRecipeList(RecipeList recipeList) {
+        this.recipeList = recipeList;
     }
 
     private void handleStartButton(ActionEvent event) {
@@ -45,21 +51,145 @@ public class Controller {
         String username = this.view.getLoginView().getloginVW().getLogin().getUserInput().getText();
         String password = this.view.getLoginView().getloginVW().getLogin().getPassInput().getText();
 
-        if (model.loginIsValid(username, password))
-            RecipeListView.setupRecipeList(new Stage(), this.view.getRecipeListAppFrame());
-        // load in saved recipe list from account
-        else
+
+        if (model.loginIsValid(username, password)) {
+            try {
+                //TODO: Pull account details from database and add existing recipes to recipeList
+                showRecipeListView();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+        else {
+            // load in saved recipe list from account
             System.out.println("User and Pass not found");
+        }
     }
 
     private void handleCreateButton(ActionEvent event) {
         String username = this.view.getLoginView().getloginVW().getLogin().getUserInput().getText();
         String password = this.view.getLoginView().getloginVW().getLogin().getPassInput().getText();
 
-        if (model.createIsValid(username, password))
-            RecipeListView.setupRecipeList(new Stage(), this.view.getRecipeListAppFrame());
-        // load in saved recipe list from account
-        else
+        if (model.createIsValid(username, password)) {
+            try {
+                //TODO: Add account to database
+                showRecipeListView();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+        else {
+            // load in saved recipe list from account
             System.out.println("Already have an account");
+        }
+            
+    }
+    /*
+     * This method handles displaying the Recipe List View UI
+     * It should be called whenever something should lead to this UI being shown
+     */
+    public void showRecipeListView() throws Exception {
+        view.getRecipeListView().start(new Stage());
+        populateWithExistingRecipes();
+
+        // Event handler for add button
+        view.getRecipeListView().getRoot().getFooter().getAddButton().setOnAction(e -> {
+            AudioPrompt.setupAudioPrompt(new Stage(), this.view.getAudioPrompt());
+            System.out.println("Add Button Pressed");
+        });
+
+        // Event handler for save button
+        view.getRecipeListView().getRoot().getFooter().getSaveButton().setOnAction(e -> {
+            //TODO: make this button save all recipes in the recipe list to a JSON object
+            ((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
+        });
+    }
+
+    /*
+     * This method handles displaying the Recipe View UI
+     * It should be called whenever somethign should lead to this UI being shown
+     * 
+     * @param recipe The recipe that will be used to construct the UI 
+     */
+    public void showRecipeView(Recipe recipe) throws Exception {
+        view.setRecipeView(new RecipeView(recipe));
+        view.getRecipeView().start(new Stage());
+
+        // Event handler for the save recipe button
+        view.getRecipeView().getRoot().getFooter().getSaveRecipeButton().setOnAction(e -> {
+            // Add the recipe to the recipeList and then update the Recipe List View UI
+            this.recipeList.add(recipe);
+            updateRecipeListView();
+            // Close the Recipe View UI
+            ((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
+        });
+
+        //Event handler for the discard recipe button
+        view.getRecipeView().getRoot().getFooter().getDiscardRecipeButton().setOnAction(e -> {
+            // Close the Recipe View UI
+            ((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
+        });
+    }
+
+    /*
+     * This method handles the start up of the app
+     * It should only be called in the main method
+     */
+    public void beginApp() throws Exception{
+        view.getLoginView().start(new Stage());
+    }
+
+    /*
+     * This method handles creating recipes to be inserted into the Recipe List View UI
+     * It should be called whenever a new recipe is being added to the UI
+     * 
+     * @param recipe The recipe that will be added to the Recipe List View UI
+     */
+    public void createRecipe(Recipe recipe) {
+        // Create a new recipe
+        RecipeViewRecipe recipeViewRecipe = new RecipeViewRecipe(recipe);
+        // Add recipe to recipelist
+        view.getRecipeListView().getRoot().getRecipeList().getChildren().add(recipeViewRecipe);
+
+        // Event handler for the delete button on each recipe
+        Button deleteButton = recipeViewRecipe.getDeleteButton();
+            deleteButton.setOnAction(e1 -> {
+                recipeList.remove(recipe.getTitle());
+                updateRecipeListView();
+            });
+
+        // Event handler for the view button on each recipe
+        Button viewButton = recipeViewRecipe.getViewButton();
+            viewButton.setOnAction(e1 -> {
+                // Show the detailed view of the recipe
+                try {
+                    showRecipeView(recipe);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                // Removing the recipe here simplifies other operations
+                // It gets added back if the recipe is saved after viewing
+                recipeList.remove(recipe.getTitle());
+                updateRecipeListView();
+            });
+    }
+
+    /*
+     * This method handles populating the Recipe List View UI with existing recipes
+     * It simply adds every recipe in recipeList to the UI
+     */
+    public void populateWithExistingRecipes() {
+        for (int i = 0; i < this.recipeList.size(); i++) {
+            createRecipe(this.recipeList.get(i));
+        }
+    }
+
+    /*
+     * This method handles updating the Recipe List View UI
+     * It should be called anytime a recipe is added or removed from recipeList
+     */
+    public void updateRecipeListView() {
+        view.getRecipeListView().clearRecipes();
+        populateWithExistingRecipes();
     }
 }
