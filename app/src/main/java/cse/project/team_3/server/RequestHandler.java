@@ -50,7 +50,11 @@ public class RequestHandler implements HttpHandler {
         URI uri = httpExchange.getRequestURI();
         String query = uri.getRawQuery();
         if (query != null) {
+
+            // Get the data from the map
             String recipeID = parseQueryParam(query, "id");
+            String recipeName = parseQueryParam(query, "recipe");
+
             return data.getOrDefault(recipeID, "Recipe not found");
         } else {
             return "Invalid GET request";
@@ -58,14 +62,28 @@ public class RequestHandler implements HttpHandler {
     }
 
     private String parseQueryParam(String query, String paramName) {
-        // Implement logic to parse query parameters
-        // This is a basic example, you may need to adapt it based on your requirements
-        // Example: query = "id=123&name=recipe"
-        // Return value for paramName = "id" is "123"
-        // Return value for paramName = "name" is "recipe"
-        // Return null if paramName is not found in the query
-        // ...
+        if (query == null || paramName == null) {
+            return null;
+        }
+        String[] pairs = query.split("&");
+        for (String pair : pairs) {
+            String[] keyValue = pair.split("=");
+            if (keyValue.length > 1 && keyValue[0].equals(paramName)) {
+                return keyValue[1];
+            }
+        }
         return null;
+    }
+
+    /*
+     * public void processAudioFiles() {
+     * boolean serverReadyForGet = true;
+     * }
+     */
+
+    // Generate Unique ID For each recipe
+    public String generateUniqueId() {
+        return UUID.randomUUID().toString();
     }
 
     public String handlePost(HttpExchange t) throws IOException {
@@ -109,6 +127,13 @@ public class RequestHandler implements HttpHandler {
             System.out.println("Transcribed Audio: \n" + transcriptionResult);
             String generatedRecipe = ChatGPT.generateResponse(transcriptionResult);
             System.out.println("Generated Recipe: \n" + generatedRecipe);
+
+            // creating unique ID, attaching it to the local data map for testing
+            data.put("id", generateUniqueId());
+            data.put("recipe", generatedRecipe);
+
+            // GET here
+            handleGet(t);
             return generatedRecipe;
         } catch (URISyntaxException e) {
             e.printStackTrace();
