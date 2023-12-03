@@ -35,7 +35,7 @@ import javafx.scene.control.ComboBox;
 class RecipeViewRecipe extends HBox {
     private Label recipeNameLabel;
     private Label mealTypeLabel;
-    private Button viewButton;
+    private Button viewButton; // private Button editButton;
     private Button deleteButton;
     private Label dateCreatedLabel;
     private int recipeIndex; // Index for sorting
