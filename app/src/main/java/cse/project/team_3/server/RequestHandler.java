@@ -53,9 +53,15 @@ public class RequestHandler implements HttpHandler {
 
             // Get the data from the map
             String recipeID = parseQueryParam(query, "id");
-            String recipeName = parseQueryParam(query, "recipe");
 
-            return data.getOrDefault(recipeID, "Recipe not found");
+            // Check if the recipeID is not null
+            if (recipeID != null) {
+                // Retrieve the recipe based on the ID from the data map
+                String recipe = data.getOrDefault(recipeID, "Recipe not found");
+                return recipe;
+            } else {
+                return "Invalid GET request: Missing 'id' parameter";
+            }
         } else {
             return "Invalid GET request";
         }
@@ -128,13 +134,17 @@ public class RequestHandler implements HttpHandler {
             String generatedRecipe = ChatGPT.generateResponse(transcriptionResult);
             System.out.println("Generated Recipe: \n" + generatedRecipe);
 
-            // creating unique ID, attaching it to the local data map for testing
-            data.put("id", generateUniqueId());
-            data.put("recipe", generatedRecipe);
+            String generatedID = generateUniqueId();
 
-            // GET here
+            // attaching it to the local data map for testing
+            data.put(generatedID, generatedRecipe);
+    
+            // GET here using the generated ID
+            System.out.println("\nquery: " + generatedID);
             handleGet(t);
-            return generatedRecipe;
+            
+            String retrievedRecipe = data.getOrDefault(generatedID, "Recipe not found");
+            return retrievedRecipe;
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return "Error processing the request";
