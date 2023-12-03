@@ -10,7 +10,7 @@
             "request": "launch",
             "mainClass": "cse.project.team_3.client.App",
             "projectName": "app",
-            "vmArgs": "--module-path 'C:/Users/jdhei/Documents/CSE110Labs/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
+            "vmArgs": "--module-path '/Users/jad/Documents/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
         },
         {
             "type": "java",
@@ -18,14 +18,14 @@
             "request": "launch",
             "mainClass": "cse.project.team_3.server.MyServer",
             "projectName": "app",
-            "vmArgs": "--module-path 'C:/Users/jdhei/Documents/CSE110Labs/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
+            "vmArgs": "--module-path '/Users/jad/Documents/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
         },
         {
             "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}",
-            "vmArgs": "--module-path 'C:/Users/jdhei/Documents/CSE110Labs/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
+            "vmArgs": "--module-path '/Users/jad/Documents/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
         }
         // {
         //     "type": "java",
