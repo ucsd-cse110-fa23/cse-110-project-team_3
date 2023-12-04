@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.nio.file.Files;
 import javax.sound.sampled.*;
 import cse.project.team_3.client.AudioPrompt.AudioPromptState;
+import javafx.application.Platform;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -197,7 +199,7 @@ public class Model {
         sendPOST(combinedAudioFile);
     }
 
-    private static void sendPOST(File uploadFile) throws IOException {
+    private void sendPOST(File uploadFile) throws IOException {
         final int wav = 1;
         final String POST_URL = "http://localhost:8100/" + wav;
 
@@ -238,13 +240,14 @@ public class Model {
                 // Extract recipe and image from JSON response
                 JSONObject jsonResponse = new JSONObject(response.toString());
                 String generatedRecipe = jsonResponse.getString("recipe");
-                String imageUrl = jsonResponse.getString("imageURL");
+                String imageURL = jsonResponse.getString("imageURL");
 
                 // Print generated recipe and imageURL
                 System.out.println("Recipe: " + generatedRecipe);
-                System.out.println("Image URL: " + imageUrl);
+                System.out.println("Image URL: " + imageURL);
 
-                // Call methods in view or controller to update?
+                // Update UI with recipe and image
+                Platform.runLater(() -> view.getRecipeView().getRoot().updateRecipeDetails(generatedRecipe, imageURL));
             }
         }
     }
