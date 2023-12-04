@@ -19,6 +19,7 @@ import java.util.Map;
 import com.mongodb.client.*;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.json.JSONObject;
 
 public class Model {
     private AudioFormat audioFormat;
@@ -223,6 +224,28 @@ public class Model {
 
             int responseCode = ((HttpURLConnection) connection).getResponseCode();
             System.out.println("Response code: [" + responseCode + "]");
+
+            // Handle the response from the server
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+
+                // Extract recipe and image from JSON response
+                JSONObject jsonResponse = new JSONObject(response.toString());
+                String generatedRecipe = jsonResponse.getString("recipe");
+                String imageUrl = jsonResponse.getString("imageURL");
+
+                // Print generated recipe and imageURL
+                System.out.println("Recipe: " + generatedRecipe);
+                System.out.println("Image URL: " + imageUrl);
+
+                // Call methods in view or controller to update?
+            }
         }
     }
 
