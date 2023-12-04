@@ -12,6 +12,7 @@ import java.io.SequenceInputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
+import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -302,5 +303,15 @@ public class Model {
         recipeCollection.insertOne(login);
         return true;
 
+    }
+
+    public boolean serverRunning() {
+        String serverHost = "localhost";
+        int serverPort = 8100;
+        try (Socket socket = new Socket(serverHost, serverPort)) {
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 }

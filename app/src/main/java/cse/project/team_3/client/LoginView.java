@@ -20,6 +20,7 @@ class Login extends GridPane {
     private TextField userInput;
     private TextField passInput;
     private Button createButton;
+    private Label serverStatus = new Label("Server not running");
 
     Login() {
         this.setPrefSize(200, 150);
@@ -34,12 +35,15 @@ class Login extends GridPane {
         Label usernameLabel = new Label("Username:");
         Label passwordLabel = new Label("Password:");
 
-        this.add(usernameLabel, 0, 0);
-        this.add(passwordLabel, 0, 1);
-        this.add(userInput, 1, 0);
-        this.add(passInput, 1, 1);
-        this.add(enterButton, 1, 2);
-        this.add(createButton, 0, 2);
+        serverStatus.setStyle("-fx-text-fill: red");
+
+        this.add(serverStatus, 0, 0);
+        this.add(usernameLabel, 0, 1);
+        this.add(passwordLabel, 0, 2);
+        this.add(userInput, 1, 1);
+        this.add(passInput, 1, 2);
+        this.add(enterButton, 1, 3);
+        this.add(createButton, 0, 3);
 
         // Set padding and alignment
         this.setPadding(new Insets(10));
@@ -63,6 +67,13 @@ class Login extends GridPane {
         createButton.setOnAction(e1 -> {
 
         });
+    }
+
+    public void setServerStatus(boolean status) {
+        if (status == true) {
+            this.serverStatus.setText("Server is running");
+            serverStatus.setStyle("-fx-text-fill:green");
+        }
     }
 
     public TextField getUserInput() {
