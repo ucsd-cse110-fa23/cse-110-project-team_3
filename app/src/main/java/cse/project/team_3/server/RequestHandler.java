@@ -6,6 +6,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import org.json.JSONObject;
+
 public class RequestHandler implements HttpHandler {
     private final Map<String, String> data;
 
@@ -109,7 +111,11 @@ public class RequestHandler implements HttpHandler {
             System.out.println("Transcribed Audio: \n" + transcriptionResult);
             String generatedRecipe = ChatGPT.generateResponse(transcriptionResult);
             System.out.println("Generated Recipe: \n" + generatedRecipe);
-            return generatedRecipe;
+            String imageURL = DallE.generateImage(generatedRecipe);
+            System.out.println("Generated Image URL: \n" + imageURL);
+            RecipeImagePair pair = new RecipeImagePair(generatedRecipe, imageURL);
+            String pairJson = pairToJson(pair);
+            return pairJson;
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return "Error processing the request";
@@ -117,6 +123,13 @@ public class RequestHandler implements HttpHandler {
             e.printStackTrace();
             return "Error processing the request";
         }
+    }
+
+    private static String pairToJson(RecipeImagePair pair) {
+        JSONObject json = new JSONObject();
+        json.put("recipe", pair.getRecipe());
+        json.put("imageURL", pair.getImageUrl());
+        return json.toString();
     }
 
     private static String readLine(InputStream is, String lineSeparator)

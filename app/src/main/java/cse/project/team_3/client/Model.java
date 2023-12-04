@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.nio.file.Files;
 import javax.sound.sampled.*;
 import cse.project.team_3.client.AudioPrompt.AudioPromptState;
+import javafx.application.Platform;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,6 +22,7 @@ import java.util.Map;
 import com.mongodb.client.*;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.json.JSONObject;
 
 public class Model {
     private AudioFormat audioFormat;
@@ -197,7 +200,7 @@ public class Model {
         sendPOST(combinedAudioFile);
     }
 
-    private static void sendPOST(File uploadFile) throws IOException {
+    private void sendPOST(File uploadFile) throws IOException {
         final int wav = 1;
         final String POST_URL = "http://localhost:8100/" + wav;
 
@@ -224,6 +227,29 @@ public class Model {
 
             int responseCode = ((HttpURLConnection) connection).getResponseCode();
             System.out.println("Response code: [" + responseCode + "]");
+
+            // Handle the response from the server
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+
+                // Extract recipe and image from JSON response
+                JSONObject jsonResponse = new JSONObject(response.toString());
+                String generatedRecipe = jsonResponse.getString("recipe");
+                String imageURL = jsonResponse.getString("imageURL");
+
+                // Print generated recipe and imageURL
+                System.out.println("Recipe: " + generatedRecipe);
+                System.out.println("Image URL: " + imageURL);
+
+                // Update UI with recipe and image
+                Platform.runLater(() -> view.getRecipeView().getRoot().updateRecipeDetails(generatedRecipe, imageURL));
+            }
         }
     }
 
@@ -314,4 +340,5 @@ public class Model {
             return false;
         }
     }
+
 }
