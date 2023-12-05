@@ -1,5 +1,11 @@
 package cse.project.team_3.client;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.swing.Action;
 
 import javafx.event.ActionEvent;
@@ -55,9 +61,16 @@ public class Controller {
         // conditional if true -> setup recipe UI, else -> error UI
         String username = this.view.getLoginView().getloginVW().getLogin().getUserInput().getText();
         String password = this.view.getLoginView().getloginVW().getLogin().getPassInput().getText();
-
-        if (model.loginIsValid(username, password)) {
+        boolean response = model.performLogin("GET", username, password);
+        if (response != false) {
             try {
+                boolean stayLoggedIn = this.view.getLoginView().getloginVW().getLogin().getCheckBox();
+                if (stayLoggedIn) {
+                    PrintWriter writer = new PrintWriter("login.txt", "UTF-8");
+                    writer.println(username);
+                    writer.println(password);
+                    writer.close();
+                }
                 // TODO: Pull account details from database and add existing recipes to
                 // recipeList
                 showRecipeListView();
@@ -65,25 +78,31 @@ public class Controller {
                 // TODO: handle exception
             }
         } else {
-            // load in saved recipe list from account
-            System.out.println("User and Pass not found");
+            System.out.println("Invalid login");
         }
     }
 
     private void handleCreateButton(ActionEvent event) {
         String username = this.view.getLoginView().getloginVW().getLogin().getUserInput().getText();
         String password = this.view.getLoginView().getloginVW().getLogin().getPassInput().getText();
-
-        if (model.createIsValid(username, password)) {
+        boolean response = model.performLogin("POST", username, password);
+        if (response != false) {
             try {
+                boolean stayLoggedIn = this.view.getLoginView().getloginVW().getLogin().getCheckBox();
+                if (stayLoggedIn) {
+                    PrintWriter writer = new PrintWriter("login.txt", "UTF-8");
+                    writer.println(username);
+                    writer.println(password);
+                    writer.close();
+                }
                 // TODO: Add account to database
                 showRecipeListView();
             } catch (Exception e) {
                 // TODO: handle exception
             }
         } else {
+            System.out.println("Login already exists");
             // load in saved recipe list from account
-            System.out.println("Already have an account");
         }
 
     }
@@ -140,7 +159,24 @@ public class Controller {
      * It should only be called in the main method
      */
     public void beginApp() throws Exception {
-        view.getLoginView().start(new Stage());
+        String filepath = "login.txt";
+        File file = new File(filepath);
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader("login.txt"))) {
+                String user = reader.readLine();
+                String pass = reader.readLine();
+                if (model.serverRunning() == true) {
+                    if (model.loginIsValid(user, pass)) {
+                        showRecipeListView();
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            view.getLoginView().start(new Stage());
+        }
+
     }
 
     /*
