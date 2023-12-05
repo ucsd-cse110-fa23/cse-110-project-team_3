@@ -66,6 +66,7 @@ class RecipeBody extends VBox {
 
 class RecipeFooter extends HBox {
     private Button saveRecipeButton;
+    private Button refreshRecipeButton;
     private Button discardRecipeButton;
 
     RecipeFooter() {
@@ -76,10 +77,14 @@ class RecipeFooter extends HBox {
         saveRecipeButton = new Button("Save Recipe");
         saveRecipeButton.setPrefSize(100, 20);
 
+        refreshRecipeButton = new Button("Refresh Recipe");
+        refreshRecipeButton.setPrefSize(100, 20);
+
         discardRecipeButton = new Button("Discard Recipe");
         discardRecipeButton.setPrefSize(100, 20);
 
         this.getChildren().add(saveRecipeButton);
+        this.getChildren().add(refreshRecipeButton);
         this.getChildren().add(discardRecipeButton);
         this.setAlignment(Pos.CENTER);
 
@@ -91,6 +96,10 @@ class RecipeFooter extends HBox {
 
     public Button getDiscardRecipeButton() {
         return discardRecipeButton;
+    }
+
+    public Button getRefreshRecipeButton() {
+        return refreshRecipeButton;
     }
 }
 
