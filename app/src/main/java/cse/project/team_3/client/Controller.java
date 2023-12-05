@@ -62,6 +62,8 @@ public class Controller {
                 }
                 // TODO: Pull account details from database and add existing recipes to
                 // recipeList
+                Stage currentStage = (Stage) (((Button) event.getSource()).getScene().getWindow());
+                currentStage.close();
                 showRecipeListView();
             } catch (Exception e) {
                 // TODO: handle exception
