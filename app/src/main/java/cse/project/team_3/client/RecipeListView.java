@@ -182,6 +182,7 @@ class RecipeViewFooter extends HBox {
     private Button addButton;
     private ComboBox<String> sortDrop; // ComboBox for sorting options
     private Button saveButton;
+    private ComboBox<String> filterDrop;
 
     RecipeViewFooter() {
         this.setPrefSize(500, 60);
@@ -199,9 +200,13 @@ class RecipeViewFooter extends HBox {
         // Initialize the ComboBox for sorting options
         sortDrop = new ComboBox<>();
         sortDrop.setPromptText("Sort By"); // Placeholder text for the ComboBox
-        sortDrop.getItems().addAll("Alphabetically", "First Created", "Last Created"); // Options for sorting
+        sortDrop.getItems().addAll("A-Z", "Z-A", "First Created", "Last Created"); // Options for sorting
 
-        this.getChildren().addAll(addButton, saveButton, sortDrop); // Adding the buttons and ComboBox to the footer
+        filterDrop = new ComboBox<>();
+        filterDrop.setPromptText("Filter By");
+        filterDrop.getItems().addAll("Breakfast", "Lunch", "Dinner", "All");
+
+        this.getChildren().addAll(addButton, saveButton, sortDrop, filterDrop); // Adding the buttons and ComboBox to the footer
         this.setAlignment(Pos.CENTER); // Aligning the buttons to the center
     }
 
@@ -214,6 +219,9 @@ class RecipeViewFooter extends HBox {
     }
     public Button getSaveButton() {
         return saveButton;
+    }
+    public ComboBox<String> getFilterDrop() {
+        return filterDrop;
     }
 }
 

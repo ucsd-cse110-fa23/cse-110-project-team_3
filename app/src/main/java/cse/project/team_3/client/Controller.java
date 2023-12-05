@@ -37,6 +37,7 @@ public class Controller {
 
     public void setRecipeList(RecipeList recipeList) {
         this.recipeList = recipeList;
+        recipeList.filter();
     }
 
     private void handleStartButton(ActionEvent event) {
@@ -174,6 +175,11 @@ public class Controller {
             recipeList.setSortTag(state);
             updateRecipeListView();
         });
+        view.getRecipeListView().getRoot().getFooter().getFilterDrop().setOnAction(e -> {
+            String state = view.getRecipeListView().getRoot().getFooter().getFilterDrop().getValue();
+            recipeList.setFilterTag(state);
+            updateRecipeListView();
+        });
     }
 
     /*
@@ -268,8 +274,8 @@ public class Controller {
      * It simply adds every recipe in recipeList to the UI
      */
     public void populateWithExistingRecipes() {
-        for (int i = 0; i < this.recipeList.size(); i++) {
-            createRecipe(this.recipeList.get(i));
+        for (int i = 0; i < this.recipeList.visibleSize(); i++) {
+            createRecipe(this.recipeList.getVisible(i));
         }
     }
 
@@ -279,6 +285,7 @@ public class Controller {
      */
     public void updateRecipeListView() {
         recipeList.sort();
+        recipeList.filter();
         view.getRecipeListView().clearRecipes();
         populateWithExistingRecipes();
     }
