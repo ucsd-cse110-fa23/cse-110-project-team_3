@@ -44,6 +44,59 @@ public class Model {
         this.view = view;
     }
 
+    public boolean performLogin(String requestType, String user, String pass) {
+        try {
+            URL url = new URL("http://localhost:8100/"); // Replace with your server endpoint
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            // Set request method and headers
+            connection.setRequestMethod(requestType);
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                connection.setRequestProperty(entry.getKey(), entry.getValue());
+            }
+            // Handle request based on requestType
+            switch (requestType) {
+                case "POST":
+                    if (serverRunning() == true) {
+                        boolean responsePost = createIsValid(user, pass);
+                        return responsePost;
+                    }
+                    break;
+                case "GET":
+                    if (serverRunning() == true) {
+                        boolean responseGet = loginIsValid(user, pass);
+                        return responseGet;
+                    }
+                    break;
+                default:
+                    // Handle other request types if needed
+                    break;
+            }
+
+            // Get the server response
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Successfully sent the request to the server
+                // You can read the server response if needed
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+            } else {
+                // Handle the error case
+                System.out.println("Failed to send the request. Response Code: " + responseCode);
+            }
+            // Close the connection
+            connection.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false; // Return null if there is an error
+    }
+
     public String performRequest(String requestType) {
         try {
             URL url = new URL("http://localhost:8100/"); // Replace with your server endpoint
@@ -281,18 +334,6 @@ public class Model {
     public boolean loginIsValid(String username, String password) {
         // check with db to see if login is valid
         String uri = "mongodb+srv://sminowada1:4j5atYmTK9suF0Rp@cluster0.l0dnisn.mongodb.net/?retryWrites=true&w=majority";
-        /*
-         * ADDS TO DATABASE
-         * try (MongoClient mongoClient = MongoClients.create(uri)) {
-         * MongoDatabase recipeDB = mongoClient.getDatabase("RecipeDB");
-         * MongoCollection<Document> recipeCollection = recipeDB.getCollection("Login");
-         * Document recipe = new Document("_id", new ObjectId());
-         * recipe.append("TestUser", "TestPass")
-         * .append("Recipe Title", "Green Eggs and Ham")
-         * .append("Directions", "cook eggs and ham then dye green");
-         * recipeCollection.insertOne(recipe);
-         * }
-         */
         // Query login info
         // Currently have a dummy profile
         // User: TestUser
@@ -308,7 +349,6 @@ public class Model {
                 return true;
             }
             return false;
-
         }
     }
 

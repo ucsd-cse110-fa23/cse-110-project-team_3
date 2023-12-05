@@ -13,6 +13,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
+import javafx.scene.control.CheckBox;
 
 class Login extends GridPane {
 
@@ -21,6 +22,7 @@ class Login extends GridPane {
     private TextField passInput;
     private Button createButton;
     private Label serverStatus = new Label("Server not running");
+    private CheckBox checkBox = new CheckBox("Stay logged in");
 
     Login() {
         this.setPrefSize(200, 150);
@@ -44,6 +46,7 @@ class Login extends GridPane {
         this.add(passInput, 1, 2);
         this.add(enterButton, 1, 3);
         this.add(createButton, 0, 3);
+        this.add(checkBox, 1, 4);
 
         // Set padding and alignment
         this.setPadding(new Insets(10));
@@ -69,11 +72,22 @@ class Login extends GridPane {
         });
     }
 
+    public boolean getCheckBox() {
+        if (this.checkBox.isSelected()) {
+            return true;
+        }
+        return false;
+    }
+
     public void setServerStatus(boolean status) {
         if (status == true) {
             this.serverStatus.setText("Server is running");
             serverStatus.setStyle("-fx-text-fill:green");
         }
+    }
+
+    public String getServerStatus() {
+        return this.serverStatus.getText();
     }
 
     public TextField getUserInput() {
