@@ -1,8 +1,5 @@
 package cse.project.team_3.client;
 
-import javafx.scene.layout.FlowPane;
-import javafx.stage.Stage;
-
 public class View {
     private AudioPrompt audioPrompt;
     private RecipeListView recipeListView;

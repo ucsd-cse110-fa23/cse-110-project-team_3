@@ -6,10 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.swing.Action;
-
-import org.json.JSONObject;
-
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
@@ -25,8 +21,6 @@ public class Controller {
         this.view = view;
         this.recipeList = new RecipeList();
 
-        this.view.getAudioPrompt().getStartButton().setOnAction(this::handleStartButton);
-        this.view.getAudioPrompt().getStopButton().setOnAction(this::handleStopButton);
         this.view.getLoginView().getloginVW().getLogin().getEnterButton().setOnAction(this::handleEnterButton);
         this.view.getLoginView().getloginVW().getLogin().getCreateButton().setOnAction(this::handleCreateButton);
         boolean temp = handleServerStatus(null);
@@ -37,28 +31,6 @@ public class Controller {
 
     public void setRecipeList(RecipeList recipeList) {
         this.recipeList = recipeList;
-    }
-
-    private void handleStartButton(ActionEvent event) {
-        String response = model.performRequest("POST");
-        System.out.println(response);
-
-    }
-
-    private void handleStopButton(ActionEvent event) {
-        if (this.view.getAudioPrompt().getStopCtr() == 0) {
-            model.stopRecording();
-        }else{
-            String response = model.performRequest("PUT");
-            System.out.println("Controller Response: " + response);
-            Recipe newRecipe = new Recipe(response);
-            try {
-                showRecipeView(newRecipe);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
-        }
     }
 
     private void handleAddButton(ActionEvent event) {
@@ -128,7 +100,6 @@ public class Controller {
         AudioPrompt.setupAudioPrompt(new Stage(), newAudioPrompt);
         this.view.setAudioPrompt(newAudioPrompt);
         newAudioPrompt.getStartButton().setOnAction(e -> {
-            System.out.println("Hello");
             String response = model.performRequest("POST");
             System.out.println(response);
         });
