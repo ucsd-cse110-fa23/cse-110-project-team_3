@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 public class RequestHandler implements HttpHandler {
     private final Map<String, String> data;
+    private File combinedAudioFile;
 
     public RequestHandler(Map<String, String> data) {
         this.data = data;
@@ -43,10 +44,6 @@ public class RequestHandler implements HttpHandler {
         outStream.close();
     }
 
-    private String handlePut(HttpExchange httpExchange) {
-        return "PUT request handled";
-    }
-
     private String handleGet(HttpExchange httpExchange) throws IOException {
         String response = "Invalid GET request";
         URI uri = httpExchange.getRequestURI();
@@ -59,13 +56,51 @@ public class RequestHandler implements HttpHandler {
             // Check if the recipeID is not null
             if (recipeID != null) {
                 // Retrieve the recipe based on the ID from the data map
-                String recipe = data.getOrDefault(recipeID, "Recipe not found");
-                return recipe;
+                response = data.getOrDefault(recipeID, "Recipe not found");
+                return response;
             } else {
                 return "Invalid GET request: Missing 'id' parameter";
             }
         } else {
             return "Invalid GET request";
+        }
+    }
+
+ private String handlePut(HttpExchange httpExchange) {
+     try {
+            
+            String transcriptionResult = Whisper.transcribeAudio(combinedAudioFile);
+            System.out.println("Transcribed Audio: \n" + transcriptionResult);
+
+            String[] recipe = transcriptionResult.split(",", 2);
+            String mealType = recipe[0];
+            String ingredients = recipe[1];
+
+            String generatedRecipe = ChatGPT.generateResponse("give me a " + mealType + " recipe using " + ingredients);
+            System.out.println("Generated Recipe: \n" + generatedRecipe);
+
+            String imageURL = DallE.generateImage(generatedRecipe);
+            System.out.println("Generated Image URL: \n" + imageURL);
+
+            String generatedID = generateUniqueId();
+
+            // attaching it to the local data map for testing
+            data.put(generatedID, generatedRecipe);
+    
+            // GET here using the generated ID
+            System.out.println("\nquery: " + generatedID);
+            handleGet(httpExchange);
+            
+            // String retrievedRecipe = data.getOrDefault(generatedID, "Recipe not found");
+            //RecipeImagePair pair = new RecipeImagePair(generatedRecipe, imageURL);
+            //JSONObject pairJson = pairToJson(pair);
+            return generatedRecipe + ";" + imageURL;
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -100,7 +135,7 @@ public class RequestHandler implements HttpHandler {
 
         String currentDirectory = System.getProperty("user.dir");
         String combinedFilePath = currentDirectory + File.separator + "combinedAudio.wav";
-        File combinedAudioFile = new File(combinedFilePath);
+        combinedAudioFile = new File(combinedFilePath);
         if (!combinedAudioFile.exists()) {
             return "Combined audio file not available";
         }
@@ -130,41 +165,14 @@ public class RequestHandler implements HttpHandler {
         bos.flush();
 
         t.sendResponseHeaders(200, 0);
-        try {
-            String transcriptionResult = Whisper.transcribeAudio(combinedAudioFile);
-            System.out.println("Transcribed Audio: \n" + transcriptionResult);
-
-            String[] recipe = transcriptionResult.split(",", 2);
-            String mealType = recipe[0];
-            String ingredients = recipe[1];
-
-            String generatedRecipe = ChatGPT.generateResponse("give me a " + mealType + " recipe using " + ingredients);
-            System.out.println("Generated Recipe: \n" + generatedRecipe);
-
-            String generatedID = generateUniqueId();
-
-            // attaching it to the local data map for testing
-            data.put(generatedID, generatedRecipe);
-    
-            // GET here using the generated ID
-            System.out.println("\nquery: " + generatedID);
-            handleGet(t);
-            
-            String retrievedRecipe = data.getOrDefault(generatedID, "Recipe not found");
-            return retrievedRecipe;
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return "Error processing the request";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Error processing the request";
-        }
+        return "POST Request handled";
     }
 
     private static String pairToJson(RecipeImagePair pair) {
         JSONObject json = new JSONObject();
         json.put("recipe", pair.getRecipe());
         json.put("imageURL", pair.getImageUrl());
+        
         return json.toString();
     }
 

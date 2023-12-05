@@ -44,15 +44,12 @@ class RecipeViewRecipe extends HBox {
     private boolean toDelete;
     private String body;
     private Recipe recipe;
-    private Recipe recipe;
 
     RecipeViewRecipe() {
         this.toDelete = false;
         // Empty constructor
     }
 
-    RecipeViewRecipe(Recipe recipe) {
-        this.recipe = recipe;
     RecipeViewRecipe(Recipe recipe) {
         this.recipe = recipe;
         this.toDelete = false;
@@ -95,9 +92,6 @@ class RecipeViewRecipe extends HBox {
         return viewButton;
     }
 
-    public Recipe getRecipe() {
-        return recipe;
-    }
     public Recipe getRecipe() {
         return recipe;
     }

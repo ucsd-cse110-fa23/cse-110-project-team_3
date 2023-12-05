@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 
 import javax.swing.Action;
 
+import org.json.JSONObject;
+
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
@@ -42,7 +44,12 @@ public class Controller {
     }
 
     private void handleStopButton(ActionEvent event) {
-        String response = model.performRequest("PUT");
+        if (stopCtr < 2) {
+            String response = model.performRequest("PUT");
+            System.out.println(response);
+        } else {
+            ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
+        }
     }
 
     private void handleAddButton(ActionEvent event) {
