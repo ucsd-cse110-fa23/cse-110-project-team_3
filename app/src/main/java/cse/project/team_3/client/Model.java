@@ -128,7 +128,7 @@ public class Model {
                     // Handle other request types if needed
                     break;
             }
-
+            
             // Get the server response
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -141,7 +141,6 @@ public class Model {
                     response.append(line);
                 }
                 reader.close();
-                return response.toString();
             } else {
                 // Handle the error case
                 System.out.println("Failed to send the request. Response Code: " + responseCode);
@@ -149,7 +148,6 @@ public class Model {
 
             // Close the connection
             connection.disconnect();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -189,6 +187,8 @@ public class Model {
                             audioFile);
 
                     Thread.sleep(5 * 1000);
+                } catch (InterruptedException ex) {
+                    System.out.println("Recording thread stopped");
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -207,6 +207,15 @@ public class Model {
 
         isRecording = false;
         this.view.getAudioPrompt().setRecordingState(isRecording);
+
+        if (recordingThread != null && recordingThread.isAlive()) {
+            recordingThread.interrupt();
+            try {
+                recordingThread.join(); // Wait for the thread to finish
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
         if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.FILTER) {
             this.view.getAudioPrompt().setIngredientAction();
@@ -285,29 +294,34 @@ public class Model {
             int responseCode = ((HttpURLConnection) connection).getResponseCode();
             System.out.println("Response code: [" + responseCode + "]");
 
-            // // Handle the response from the server
-            // if (responseCode == HttpURLConnection.HTTP_OK) {
-            //         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            //         StringBuilder response = new StringBuilder();
-            //         String line;
-            //         while ((line = reader.readLine()) != null) {
-            //             response.append(line);
-            //         }
-            //         reader.close();
+            // Handle the response from the server
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                int contentLength = connection.getContentLength();
+                if (contentLength > 0) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+                    reader.close();
 
-            //         // Extract recipe and image from JSON response
-            //         JSONObject jsonResponse = new JSONObject(response.toString());
-            //         String generatedRecipe = jsonResponse.getString("recipe");
-            //         String imageURL = jsonResponse.getString("imageURL");
+                    // Extract recipe and image from JSON response
+                    JSONObject jsonResponse = new JSONObject(response.toString());
+                    String generatedRecipe = jsonResponse.getString("recipe");
+                    String imageURL = jsonResponse.getString("imageURL");
 
-            //         // Print generated recipe and imageURL
-            //         System.out.println("Recipe: " + generatedRecipe);
-            //         System.out.println("Image URL: " + imageURL);
+                    // Print generated recipe and imageURL
+                    System.out.println("Recipe: " + generatedRecipe);
+                    System.out.println("Image URL: " + imageURL);
 
-            //         // Update UI with recipe and image
-            //         Platform.runLater(() -> view.getRecipeView().getRoot().updateRecipeDetails(generatedRecipe, imageURL));
-            //     }
-            // }
+                    // Update UI with recipe and image
+                    Platform.runLater(() -> view.getRecipeView().getRoot().updateRecipeDetails(generatedRecipe, imageURL));
+                }
+            } else {
+                // No content in the response
+                System.out.println("No content in the response.");
+            }
         }
     }
 
