@@ -1,6 +1,8 @@
 package cse.project.team_3.client;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /*
@@ -10,9 +12,14 @@ import java.util.List;
  */
 public class RecipeList {
     List<Recipe> recipeList;
+    String sortTag;
 
     public RecipeList() {
         recipeList = new ArrayList<Recipe>();
+        this.sortTag = "First Created";
+    }
+    public void setSortTag(String sortTag) {
+        this.sortTag = sortTag;
     }
 
     /*
@@ -117,6 +124,45 @@ public class RecipeList {
      */
     public void clear() {
         recipeList.clear();
+    }
+    static class CompareAlphabetically implements Comparator<Recipe> {
+
+        @Override
+        public int compare(Recipe recipe1, Recipe recipe2) {
+            return recipe1.getTitle().compareTo(recipe2.getTitle());
+        }
+
+    }
+    static class CompareFirstCreated implements Comparator<Recipe> {
+
+        @Override
+        public int compare(Recipe recipe1, Recipe recipe2) {
+            return recipe1.getDateCreated().compareTo(recipe2.getDateCreated());
+        }
+
+    }
+    public void sort() {
+        switch (sortTag) {
+            case "Alphabetically":
+                sortAlphabetically();
+                break;
+            case "First Created":
+                sortFirstCreated();
+                break;
+            case "Last Created":
+                sortLastCreated();
+                break;
+        }
+    }
+
+    public void sortAlphabetically() {
+        Collections.sort(recipeList, new CompareAlphabetically());
+    }
+    public void sortFirstCreated() {
+        Collections.sort(recipeList, new CompareFirstCreated());
+    }
+    public void sortLastCreated() {
+        Collections.sort(recipeList, new CompareFirstCreated().reversed());
     }
 }
 

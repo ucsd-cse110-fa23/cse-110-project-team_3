@@ -169,6 +169,11 @@ public class Controller {
             // TODO: make this button save all recipes in the recipe list to a JSON object
             ((Stage) (((Button) e.getSource()).getScene().getWindow())).close();
         });
+        view.getRecipeListView().getRoot().getFooter().getSortDrop().setOnAction(e -> {
+            String state = view.getRecipeListView().getRoot().getFooter().getSortDrop().getValue();
+            recipeList.setSortTag(state);
+            updateRecipeListView();
+        });
     }
 
     /*
@@ -273,6 +278,7 @@ public class Controller {
      * It should be called anytime a recipe is added or removed from recipeList
      */
     public void updateRecipeListView() {
+        recipeList.sort();
         view.getRecipeListView().clearRecipes();
         populateWithExistingRecipes();
     }
