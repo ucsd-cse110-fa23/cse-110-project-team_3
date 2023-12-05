@@ -238,23 +238,10 @@ public class Model {
             AudioInputStream mealTypeStream = AudioSystem.getAudioInputStream(mealTypeAudioFile);
             AudioInputStream ingredientInputStream = AudioSystem.getAudioInputStream(ingredientAudioFile);
 
-            char semi = ';';
-            delimiter = (byte) semi;
-            byte[] delimiterBytes = delimiter.getBytes();
-
-            AudioInputStream delimiterStream = new AudioInputStream(
-                new ByteArrayInputStream(delimiterBytes),
-                mealTypeStream.getFormat(),
-                delimiterBytes.length / mealTypeStream.getFormat().getFrameSize());
-
             AudioInputStream combinedStream = new AudioInputStream(
-                new SequenceInputStream(mealTypeStream, delimiterStream),
+                new SequenceInputStream(mealTypeStream, ingredientInputStream),
                 mealTypeStream.getFormat(),
-                mealTypeStream.getFrameLength() + delimiterStream.getFrameLength());
-            
-            combinedStream = new AudioInputStream(
-                new SequenceInputStream(combinedStream, AudioSystem.getAudioInputStream(ingredientAudioFile)),
-                combinedStream.getFormat(), combinedStream.getFrameLength() + ingredientInputStream.getFrameLength());
+                mealTypeStream.getFrameLength() + ingredientInputStream.getFrameLength());
 
             // Write the combined audio to the file
             AudioSystem.write(
@@ -298,28 +285,29 @@ public class Model {
             int responseCode = ((HttpURLConnection) connection).getResponseCode();
             System.out.println("Response code: [" + responseCode + "]");
 
-            // Handle the response from the server
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-                reader.close();
+            // // Handle the response from the server
+            // if (responseCode == HttpURLConnection.HTTP_OK) {
+            //         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            //         StringBuilder response = new StringBuilder();
+            //         String line;
+            //         while ((line = reader.readLine()) != null) {
+            //             response.append(line);
+            //         }
+            //         reader.close();
 
-                // Extract recipe and image from JSON response
-                JSONObject jsonResponse = new JSONObject(response.toString());
-                String generatedRecipe = jsonResponse.getString("recipe");
-                String imageURL = jsonResponse.getString("imageURL");
+            //         // Extract recipe and image from JSON response
+            //         JSONObject jsonResponse = new JSONObject(response.toString());
+            //         String generatedRecipe = jsonResponse.getString("recipe");
+            //         String imageURL = jsonResponse.getString("imageURL");
 
-                // Print generated recipe and imageURL
-                System.out.println("Recipe: " + generatedRecipe);
-                System.out.println("Image URL: " + imageURL);
+            //         // Print generated recipe and imageURL
+            //         System.out.println("Recipe: " + generatedRecipe);
+            //         System.out.println("Image URL: " + imageURL);
 
-                // Update UI with recipe and image
-                Platform.runLater(() -> view.getRecipeView().getRoot().updateRecipeDetails(generatedRecipe, imageURL));
-            }
+            //         // Update UI with recipe and image
+            //         Platform.runLater(() -> view.getRecipeView().getRoot().updateRecipeDetails(generatedRecipe, imageURL));
+            //     }
+            // }
         }
     }
 
