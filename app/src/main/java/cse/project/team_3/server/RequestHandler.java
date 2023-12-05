@@ -67,8 +67,7 @@ public class RequestHandler implements HttpHandler {
     }
 
  private String handlePut(HttpExchange httpExchange) {
-     try {
-            
+     try {  
             String transcriptionResult = Whisper.transcribeAudio(combinedAudioFile);
             System.out.println("Transcribed Audio: \n" + transcriptionResult);
 

@@ -202,6 +202,8 @@ public class Model {
             targetDataLine.close();
         }
 
+        this.view.getAudioPrompt().setStopCtr(1);
+        
         isRecording = false;
         this.view.getAudioPrompt().setRecordingState(isRecording);
 

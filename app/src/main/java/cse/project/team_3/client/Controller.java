@@ -41,13 +41,16 @@ public class Controller {
 
     private void handleStartButton(ActionEvent event) {
         String response = model.performRequest("POST");
+        System.out.println(response);
+
     }
 
     private void handleStopButton(ActionEvent event) {
-        if (stopCtr < 2) {
+        if (this.view.getAudioPrompt().getStopCtr() == 0) {
+            model.stopRecording();
+        }else{
             String response = model.performRequest("PUT");
             System.out.println(response);
-        } else {
             ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
         }
     }
