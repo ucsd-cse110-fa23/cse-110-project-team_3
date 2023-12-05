@@ -31,6 +31,7 @@ public class Controller {
 
     public void setRecipeList(RecipeList recipeList) {
         this.recipeList = recipeList;
+        recipeList.filter();
     }
 
     private void handleAddButton(ActionEvent event) {
@@ -140,6 +141,16 @@ public class Controller {
             // TODO: make this button save all recipes in the recipe list to a JSON object
             ((Stage) (((Button) e.getSource()).getScene().getWindow())).close();
         });
+        view.getRecipeListView().getRoot().getFooter().getSortDrop().setOnAction(e -> {
+            String state = view.getRecipeListView().getRoot().getFooter().getSortDrop().getValue();
+            recipeList.setSortTag(state);
+            updateRecipeListView();
+        });
+        view.getRecipeListView().getRoot().getFooter().getFilterDrop().setOnAction(e -> {
+            String state = view.getRecipeListView().getRoot().getFooter().getFilterDrop().getValue();
+            recipeList.setFilterTag(state);
+            updateRecipeListView();
+        });
     }
 
     /*
@@ -234,8 +245,8 @@ public class Controller {
      * It simply adds every recipe in recipeList to the UI
      */
     public void populateWithExistingRecipes() {
-        for (int i = 0; i < this.recipeList.size(); i++) {
-            createRecipe(this.recipeList.get(i));
+        for (int i = 0; i < this.recipeList.visibleSize(); i++) {
+            createRecipe(this.recipeList.getVisible(i));
         }
     }
 
@@ -244,6 +255,8 @@ public class Controller {
      * It should be called anytime a recipe is added or removed from recipeList
      */
     public void updateRecipeListView() {
+        recipeList.sort();
+        recipeList.filter();
         view.getRecipeListView().clearRecipes();
         populateWithExistingRecipes();
     }
