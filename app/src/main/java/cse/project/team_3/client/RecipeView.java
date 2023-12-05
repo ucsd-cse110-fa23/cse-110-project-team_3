@@ -19,23 +19,48 @@ import javafx.stage.Stage;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 
 class RecipeBody extends VBox {
     TextArea text;
+    ImageView imageView;
+
     RecipeBody(String recipe) {
+
         text = new TextArea(recipe);
         text.setPrefSize(700, 700);
         text.setWrapText(true);
         text.setMaxWidth(600);
+
+        imageView = new ImageView();
+        imageView.setPreserveRatio(true);
+        imageView.setFitHeight(200);
+        imageView.setSmooth(true);
+
         this.getChildren().add(text);
+        this.getChildren().add(imageView);
         VBox.setMargin(text, new Insets(20, 20, 20, 20));
         this.setStyle("-fx-font-size: 15;");
     }
+
     public void setText(String text) {
         this.text = new TextArea(text);
     }
+
     public String getText() {
         return text.getText();
+    }
+
+    public void setImage(Image image) {
+        imageView.setImage(image);
+    }
+
+    public Image getImage() {
+        return imageView.getImage();
+    }
+    public void clearRecipeImage() {
+        imageView.setImage(null);
     }
 }
 
@@ -83,6 +108,7 @@ class RecipeHeader extends HBox {
         this.getChildren().add(titleText);
         this.setAlignment(Pos.CENTER); // Align the text to the Center
     }
+
     public String getTitleText() {
         return titleText.getText();
     }
@@ -124,6 +150,16 @@ class RecipeAppFrame extends BorderPane {
 
     }
 
+    // Update with recipe and image
+    public void updateRecipeDetails(String generatedRecipe, String imageURL) {
+        recipeBody.setText(generatedRecipe);
+        if (imageURL != null && !imageURL.isEmpty()) {
+            Image image = new Image(imageURL); // DallE generated image
+            recipeBody.setImage(image);
+        }
+        //else { recipeBody.clearRecipeImage(); }
+    }
+
     public void setRecipeBody(String text) {
         recipeBody = new RecipeBody(text);
         scroll.setContent(recipeBody);
@@ -138,23 +174,25 @@ class RecipeAppFrame extends BorderPane {
         setRecipeBody(recipe.getBody());
         setRecipeHeader(recipe.getTitle());
     }
-    
+
     public RecipeFooter getFooter() {
         return footer;
     }
-    
+
 }
 
 public class RecipeView extends Application {
     Recipe recipe;
     RecipeAppFrame root;
+
     public RecipeView(Recipe recipe) {
         this.recipe = recipe;
     }
+
     public RecipeView() {
         this.recipe = new Recipe();
     }
-    
+
     public void setUpRecipeView(Stage primaryStage, RecipeAppFrame root) {
         primaryStage.setTitle("Recipe");
         // Create scene of mentioned size with the border pane
@@ -164,16 +202,24 @@ public class RecipeView extends Application {
         // Show the app
         primaryStage.show();
     }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Setting the Layout of the Window - Should contain a Header, Footer, and the RecipeList
+        // Setting the Layout of the Window - Should contain a Header, Footer, and the
+        // RecipeList
         root = new RecipeAppFrame(recipe);
         setUpRecipeView(primaryStage, root);
         root.buildRecipe(recipe);
     }
+
+    public void displayRecipeDetails(String generatedRecipe, String imageURL) {
+        root.updateRecipeDetails(generatedRecipe, imageURL);
+    }
+
     public Recipe getRecipe() {
         return recipe;
     }
+
     public RecipeAppFrame getRoot() {
         return root;
     }

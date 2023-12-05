@@ -25,6 +25,8 @@ import java.util.List;
 
 import javax.swing.text.View;
 
+import javax.swing.text.View;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -35,12 +37,13 @@ import javafx.scene.control.ComboBox;
 class RecipeViewRecipe extends HBox {
     private Label recipeNameLabel;
     private Label mealTypeLabel;
-    private Button viewButton; // private Button editButton;
+    private Button viewButton;
     private Button deleteButton;
     private Label dateCreatedLabel;
     private int recipeIndex; // Index for sorting
     private boolean toDelete;
     private String body;
+    private Recipe recipe;
     private Recipe recipe;
 
     RecipeViewRecipe() {
@@ -50,15 +53,19 @@ class RecipeViewRecipe extends HBox {
 
     RecipeViewRecipe(Recipe recipe) {
         this.recipe = recipe;
+    RecipeViewRecipe(Recipe recipe) {
+        this.recipe = recipe;
         this.toDelete = false;
         this.setPrefSize(500, 20);
         this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;");
 
         recipeNameLabel = new Label(recipe.getTitle());
+        recipeNameLabel = new Label(recipe.getTitle());
         recipeNameLabel.setFont(Font.font("Arial", 12));
         recipeNameLabel.setPrefSize(300, 20);
         recipeNameLabel.setPadding(new Insets(10, 0, 10, 0));
 
+        mealTypeLabel = new Label(recipe.getMealType());
         mealTypeLabel = new Label(recipe.getMealType());
         mealTypeLabel.setFont(Font.font("Arial", 12));
         mealTypeLabel.setPrefSize(80, 20);
@@ -72,6 +79,7 @@ class RecipeViewRecipe extends HBox {
         deleteButton.setPrefSize(70, 20);
         deleteButton.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0;");
 
+        dateCreatedLabel = new Label(recipe.getDateCreated());
         dateCreatedLabel = new Label(recipe.getDateCreated());
         dateCreatedLabel.setFont(Font.font("Arial", 12));
         dateCreatedLabel.setPrefSize(80, 20);
@@ -87,6 +95,9 @@ class RecipeViewRecipe extends HBox {
         return viewButton;
     }
 
+    public Recipe getRecipe() {
+        return recipe;
+    }
     public Recipe getRecipe() {
         return recipe;
     }
@@ -115,9 +126,11 @@ class RecipeViewRecipe extends HBox {
     public void toDelete() {
         this.toDelete = true;
     }
+    
     public boolean isDelete() {
         return toDelete;
     }
+    
     public String getBody() {
         return body;
     }

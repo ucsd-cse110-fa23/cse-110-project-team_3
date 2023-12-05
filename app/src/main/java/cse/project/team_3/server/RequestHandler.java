@@ -6,6 +6,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import org.json.JSONObject;
+
 public class RequestHandler implements HttpHandler {
     private final Map<String, String> data;
 
@@ -157,6 +159,13 @@ public class RequestHandler implements HttpHandler {
             e.printStackTrace();
             return "Error processing the request";
         }
+    }
+
+    private static String pairToJson(RecipeImagePair pair) {
+        JSONObject json = new JSONObject();
+        json.put("recipe", pair.getRecipe());
+        json.put("imageURL", pair.getImageUrl());
+        return json.toString();
     }
 
     private static String readLine(InputStream is, String lineSeparator)
