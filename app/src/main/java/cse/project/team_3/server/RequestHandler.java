@@ -85,6 +85,7 @@ public class RequestHandler implements HttpHandler {
 
             // attaching it to the local data map for testing
             data.put(generatedID, generatedRecipe);
+            data.put("ImageURL", imageURL);
     
             // GET here using the generated ID
             System.out.println("\nquery: " + generatedID);

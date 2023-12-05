@@ -42,7 +42,6 @@ public class Controller {
     private void handleStartButton(ActionEvent event) {
         String response = model.performRequest("POST");
         System.out.println(response);
-
     }
 
     private void handleStopButton(ActionEvent event) {

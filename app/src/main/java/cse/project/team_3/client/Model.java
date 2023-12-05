@@ -1,6 +1,7 @@
 package cse.project.team_3.client;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import javax.sound.sampled.*;
 import cse.project.team_3.client.AudioPrompt.AudioPromptState;
@@ -203,7 +204,7 @@ public class Model {
         }
 
         this.view.getAudioPrompt().setStopCtr(1);
-        
+
         isRecording = false;
         this.view.getAudioPrompt().setRecordingState(isRecording);
 
@@ -235,12 +236,25 @@ public class Model {
 
         try {
             AudioInputStream mealTypeStream = AudioSystem.getAudioInputStream(mealTypeAudioFile);
-            AudioInputStream ingredientStream = AudioSystem.getAudioInputStream(ingredientAudioFile);
+            AudioInputStream ingredientInputStream = AudioSystem.getAudioInputStream(ingredientAudioFile);
+
+            char semi = ';';
+            delimiter = (byte) semi;
+            byte[] delimiterBytes = delimiter.getBytes();
+
+            AudioInputStream delimiterStream = new AudioInputStream(
+                new ByteArrayInputStream(delimiterBytes),
+                mealTypeStream.getFormat(),
+                delimiterBytes.length / mealTypeStream.getFormat().getFrameSize());
 
             AudioInputStream combinedStream = new AudioInputStream(
-                    new SequenceInputStream(mealTypeStream, ingredientStream),
-                    mealTypeStream.getFormat(),
-                    mealTypeStream.getFrameLength() + ingredientStream.getFrameLength());
+                new SequenceInputStream(mealTypeStream, delimiterStream),
+                mealTypeStream.getFormat(),
+                mealTypeStream.getFrameLength() + delimiterStream.getFrameLength());
+            
+            combinedStream = new AudioInputStream(
+                new SequenceInputStream(combinedStream, AudioSystem.getAudioInputStream(ingredientAudioFile)),
+                combinedStream.getFormat(), combinedStream.getFrameLength() + ingredientInputStream.getFrameLength());
 
             // Write the combined audio to the file
             AudioSystem.write(
