@@ -15,7 +15,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.Socket;
-import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -187,7 +186,18 @@ public class Model {
                             AudioFileFormat.Type.WAVE,
                             audioFile);
 
-                    Thread.sleep(5 * 1000);
+                    // Simulate recording for 5 seconds
+                    for (int i = 0; i < 5; i++) {
+                        // Check for interruption during sleep
+                        if (Thread.interrupted()) {
+                            throw new InterruptedException("Recording thread interrupted during sleep.");
+                        }
+
+                        Thread.sleep(1000); // Sleep for 1 second
+                    }
+                } catch (InterruptedException ex) {
+                    // Handle the interruption gracefully
+                    System.out.println("Recording thread stopped.");
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -200,6 +210,15 @@ public class Model {
         if (targetDataLine != null) {
             targetDataLine.stop();
             targetDataLine.close();
+        }
+
+        if (recordingThread != null && recordingThread.isAlive()) {
+            recordingThread.interrupt();
+            try {
+                recordingThread.join(); // Wait for the thread to finish
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         this.view.getAudioPrompt().setStopCtr(1);

@@ -1,38 +1,19 @@
 package cse.project.team_3.client;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.geometry.Insets;
 import javafx.scene.text.*;
-import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
-
-import javax.swing.text.View;
-
-import javax.swing.text.View;
-
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.stage.FileChooser.ExtensionFilter;
-
-// New imports
-import javafx.scene.control.ComboBox;
 
 class RecipeViewRecipe extends HBox {
     private Label recipeNameLabel;
