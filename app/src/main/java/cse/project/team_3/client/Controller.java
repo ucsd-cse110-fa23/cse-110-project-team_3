@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 
 import javax.swing.Action;
 
+import org.json.JSONObject;
+
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
@@ -39,10 +41,24 @@ public class Controller {
 
     private void handleStartButton(ActionEvent event) {
         String response = model.performRequest("POST");
+        System.out.println(response);
+
     }
 
     private void handleStopButton(ActionEvent event) {
-        String response = model.performRequest("PUT");
+        if (this.view.getAudioPrompt().getStopCtr() == 0) {
+            model.stopRecording();
+        }else{
+            String response = model.performRequest("PUT");
+            System.out.println("Controller Response: " + response);
+            Recipe newRecipe = new Recipe(response);
+            try {
+                showRecipeView(newRecipe);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
+        }
     }
 
     private void handleAddButton(ActionEvent event) {
@@ -107,6 +123,32 @@ public class Controller {
 
     }
 
+    public void showAudioPrompt() {
+        AudioPrompt newAudioPrompt = new AudioPrompt();
+        AudioPrompt.setupAudioPrompt(new Stage(), newAudioPrompt);
+        this.view.setAudioPrompt(newAudioPrompt);
+        newAudioPrompt.getStartButton().setOnAction(e -> {
+            System.out.println("Hello");
+            String response = model.performRequest("POST");
+            System.out.println(response);
+        });
+        newAudioPrompt.getStopButton().setOnAction(e -> {
+            if (newAudioPrompt.getStopCtr() == 0) {
+                model.stopRecording();
+            }else{
+                String response = model.performRequest("PUT");
+                System.out.println("Controller Response: " + response);
+                Recipe newRecipe = new Recipe(response);
+                try {
+                    showRecipeView(newRecipe);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+                ((Stage) (((Button) e.getSource()).getScene().getWindow())).close();
+            }
+        });
+    }
+
     /*
      * This method handles displaying the Recipe List View UI
      * It should be called whenever something should lead to this UI being shown
@@ -117,7 +159,8 @@ public class Controller {
 
         // Event handler for add button
         view.getRecipeListView().getRoot().getFooter().getAddButton().setOnAction(e -> {
-            AudioPrompt.setupAudioPrompt(new Stage(), this.view.getAudioPrompt());
+            showAudioPrompt();
+            //AudioPrompt.setupAudioPrompt(new Stage(), this.view.getAudioPrompt());
             System.out.println("Add Button Pressed");
         });
 

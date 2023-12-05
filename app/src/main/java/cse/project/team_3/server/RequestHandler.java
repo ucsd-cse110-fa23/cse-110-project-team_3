@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 public class RequestHandler implements HttpHandler {
     private final Map<String, String> data;
+    private File combinedAudioFile;
 
     public RequestHandler(Map<String, String> data) {
         this.data = data;
@@ -43,31 +44,94 @@ public class RequestHandler implements HttpHandler {
         outStream.close();
     }
 
-    private String handlePut(HttpExchange httpExchange) {
-        return "PUT request handled";
-    }
-
     private String handleGet(HttpExchange httpExchange) throws IOException {
         String response = "Invalid GET request";
         URI uri = httpExchange.getRequestURI();
         String query = uri.getRawQuery();
         if (query != null) {
+
+            // Get the data from the map
             String recipeID = parseQueryParam(query, "id");
-            return data.getOrDefault(recipeID, "Recipe not found");
+
+            // Check if the recipeID is not null
+            if (recipeID != null) {
+                // Retrieve the recipe based on the ID from the data map
+                response = data.getOrDefault(recipeID, "Recipe not found");
+                return response;
+            } else {
+                return "Invalid GET request: Missing 'id' parameter";
+            }
         } else {
             return "Invalid GET request";
         }
     }
 
+ private String handlePut(HttpExchange httpExchange) {
+     try {  
+            String transcriptionResult = Whisper.transcribeAudio(combinedAudioFile);
+            System.out.println("Transcribed Audio: \n" + transcriptionResult);
+
+            String temp = transcriptionResult.replace(",", ";");
+            temp = temp.replace(".", ";");
+            String[] recipe = temp.split(";", 2);
+            String mealType = recipe[0];
+            if(mealType.startsWith("B") || mealType.startsWith("b")) {
+                mealType = "Breakfast";
+            }
+            System.out.println("Meal Type: " + mealType);
+            String ingredients = recipe[1];
+
+            String generatedRecipe = ChatGPT.generateResponse("give me a " + mealType + " recipe using " + ingredients + " without using fractions");
+            System.out.println("Generated Recipe: \n" + generatedRecipe);
+
+            String imageURL = DallE.generateImage(generatedRecipe);
+            System.out.println("Generated Image URL: \n" + imageURL);
+
+            String generatedID = generateUniqueId();
+
+            // attaching it to the local data map for testing
+            data.put(generatedID, generatedRecipe);
+    
+            // GET here using the generated ID
+            System.out.println("\nquery: " + generatedID);
+            handleGet(httpExchange);
+            
+            // String retrievedRecipe = data.getOrDefault(generatedID, "Recipe not found");
+            //RecipeImagePair pair = new RecipeImagePair(generatedRecipe, imageURL);
+            //JSONObject pairJson = pairToJson(pair);
+            return generatedRecipe + ";" + mealType.trim() + ";" + ingredients.trim();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private String parseQueryParam(String query, String paramName) {
-        // Implement logic to parse query parameters
-        // This is a basic example, you may need to adapt it based on your requirements
-        // Example: query = "id=123&name=recipe"
-        // Return value for paramName = "id" is "123"
-        // Return value for paramName = "name" is "recipe"
-        // Return null if paramName is not found in the query
-        // ...
+        if (query == null || paramName == null) {
+            return null;
+        }
+        String[] pairs = query.split("&");
+        for (String pair : pairs) {
+            String[] keyValue = pair.split("=");
+            if (keyValue.length > 1 && keyValue[0].equals(paramName)) {
+                return keyValue[1];
+            }
+        }
         return null;
+    }
+
+    /*
+     * public void processAudioFiles() {
+     * boolean serverReadyForGet = true;
+     * }
+     */
+
+    // Generate Unique ID For each recipe
+    public String generateUniqueId() {
+        return UUID.randomUUID().toString();
     }
 
     public String handlePost(HttpExchange t) throws IOException {
@@ -76,7 +140,7 @@ public class RequestHandler implements HttpHandler {
 
         String currentDirectory = System.getProperty("user.dir");
         String combinedFilePath = currentDirectory + File.separator + "combinedAudio.wav";
-        File combinedAudioFile = new File(combinedFilePath);
+        combinedAudioFile = new File(combinedFilePath);
         if (!combinedAudioFile.exists()) {
             return "Combined audio file not available";
         }
@@ -106,29 +170,14 @@ public class RequestHandler implements HttpHandler {
         bos.flush();
 
         t.sendResponseHeaders(200, 0);
-        try {
-            String transcriptionResult = Whisper.transcribeAudio(combinedAudioFile);
-            System.out.println("Transcribed Audio: \n" + transcriptionResult);
-            String generatedRecipe = ChatGPT.generateResponse(transcriptionResult);
-            System.out.println("Generated Recipe: \n" + generatedRecipe);
-            String imageURL = DallE.generateImage(generatedRecipe);
-            System.out.println("Generated Image URL: \n" + imageURL);
-            RecipeImagePair pair = new RecipeImagePair(generatedRecipe, imageURL);
-            String pairJson = pairToJson(pair);
-            return pairJson;
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return "Error processing the request";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Error processing the request";
-        }
+        return "POST Request handled";
     }
 
     private static String pairToJson(RecipeImagePair pair) {
         JSONObject json = new JSONObject();
         json.put("recipe", pair.getRecipe());
         json.put("imageURL", pair.getImageUrl());
+        
         return json.toString();
     }
 

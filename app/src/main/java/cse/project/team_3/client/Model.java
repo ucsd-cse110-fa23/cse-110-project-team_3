@@ -15,6 +15,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.Socket;
+import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -136,7 +137,7 @@ public class Model {
                 StringBuilder response = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    response.append(line);
+                    response.append(line + "\n");
                 }
                 reader.close();
                 return response.toString();
@@ -201,6 +202,8 @@ public class Model {
             targetDataLine.close();
         }
 
+        this.view.getAudioPrompt().setStopCtr(1);
+        
         isRecording = false;
         this.view.getAudioPrompt().setRecordingState(isRecording);
 
@@ -380,5 +383,4 @@ public class Model {
             return false;
         }
     }
-
 }

@@ -19,7 +19,7 @@ public class AudioPrompt extends FlowPane {
     private Button stopButton;
     private Label recordingLabel;
     private AudioPromptState currState;
-
+    private int stopCtr;
 
     // Set a default style for buttons and fields - background color, font size,
     // italics
@@ -43,6 +43,7 @@ public class AudioPrompt extends FlowPane {
         this.setPrefHeight(100);
 
         currState = AudioPromptState.FILTER;
+        stopCtr = 0;
 
         stateLabel = new Label("\"Voice: Meal type: Breakfast, Lunch, Dinner\"");
         stateLabel.setStyle(defaultFilterLabelStyle);
@@ -81,6 +82,14 @@ public class AudioPrompt extends FlowPane {
 
     public Button getStopButton() {
         return stopButton;
+    }
+
+    public int getStopCtr() {
+        return stopCtr;
+    }
+
+    public void setStopCtr(int ctr) {
+        stopCtr = ctr;
     }
 
     public void setRecordingState(boolean isRecording) {

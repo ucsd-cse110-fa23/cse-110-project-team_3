@@ -40,4 +40,32 @@ public class MyServer {
 
     System.out.println("Server started on port " + SERVER_PORT);
   }
+  public static void startServer() throws IOException {
+    // create a thread pool to handle requests
+    ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
+
+    // create a map to store data
+    Map<String, String> data = new HashMap<>();
+
+    // create a server
+    HttpServer server = HttpServer.create(
+        new InetSocketAddress(SERVER_HOSTNAME, SERVER_PORT),
+        0);
+
+    server.createContext("/", new RequestHandler(data) {
+
+    });
+
+    // server.createContext("/name", new MyHandler() {
+
+    // });
+
+    // set the executor
+    server.setExecutor(threadPoolExecutor);
+
+    // start the server
+    server.start();
+
+    System.out.println("Server started on port " + SERVER_PORT);
+  }
 }
