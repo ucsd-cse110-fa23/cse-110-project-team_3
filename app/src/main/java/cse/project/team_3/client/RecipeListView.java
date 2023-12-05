@@ -57,12 +57,10 @@ class RecipeViewRecipe extends HBox {
         this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;");
 
         recipeNameLabel = new Label(recipe.getTitle());
-        recipeNameLabel = new Label(recipe.getTitle());
         recipeNameLabel.setFont(Font.font("Arial", 12));
         recipeNameLabel.setPrefSize(300, 20);
         recipeNameLabel.setPadding(new Insets(10, 0, 10, 0));
 
-        mealTypeLabel = new Label(recipe.getMealType());
         mealTypeLabel = new Label(recipe.getMealType());
         mealTypeLabel.setFont(Font.font("Arial", 12));
         mealTypeLabel.setPrefSize(80, 20);
@@ -76,8 +74,7 @@ class RecipeViewRecipe extends HBox {
         deleteButton.setPrefSize(70, 20);
         deleteButton.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0;");
 
-        dateCreatedLabel = new Label(recipe.getDateCreated());
-        dateCreatedLabel = new Label(recipe.getDateCreated());
+        dateCreatedLabel = new Label(recipe.getDateCreated().toLocalDate().toString());
         dateCreatedLabel.setFont(Font.font("Arial", 12));
         dateCreatedLabel.setPrefSize(80, 20);
         dateCreatedLabel.setPadding(new Insets(10, 0, 10, 0));
@@ -202,7 +199,7 @@ class RecipeViewFooter extends HBox {
         // Initialize the ComboBox for sorting options
         sortDrop = new ComboBox<>();
         sortDrop.setPromptText("Sort By"); // Placeholder text for the ComboBox
-        sortDrop.getItems().addAll("Meal Type", "Date Created"); // Options for sorting
+        sortDrop.getItems().addAll("Alphabetically", "First Created", "Last Created"); // Options for sorting
 
         this.getChildren().addAll(addButton, saveButton, sortDrop); // Adding the buttons and ComboBox to the footer
         this.setAlignment(Pos.CENTER); // Aligning the buttons to the center

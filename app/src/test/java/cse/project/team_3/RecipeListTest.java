@@ -3,6 +3,9 @@ package cse.project.team_3;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.concurrent.TimeUnit;
+
 import cse.project.team_3.client.RecipeList;
 import cse.project.team_3.client.Recipe;
 
@@ -95,6 +98,50 @@ public class RecipeListTest {
         recipeList.clear();
         assertEquals(0, recipeList.size());
         assertTrue(recipeList.isEmpty());
+    }
+    @Test
+    public void testSortAlphabetically() {
+        recipeList.clear();
+        recipeList.add(new Recipe("f", "", "", ""));
+        recipeList.add(new Recipe("u", "", "", ""));
+        recipeList.add(new Recipe("a", "", "", ""));
+        recipeList.setSortTag("Alphabetically");
+        recipeList.sort();
+        assertTrue(recipeList.get(0).getTitle().equals("a"));
+        assertTrue(recipeList.get(1).getTitle().equals("f"));
+        assertTrue(recipeList.get(2).getTitle().equals("u"));
+    }
+    @Test
+    public void testSortFirstCreated() throws InterruptedException {
+        recipeList.clear();
+        recipeList.add(new Recipe("f", "", "", ""));
+        TimeUnit.SECONDS.sleep(1);
+        recipeList.add(new Recipe("u", "", "", ""));
+        TimeUnit.SECONDS.sleep(1);
+        recipeList.add(new Recipe("a", "", "", ""));
+        recipeList.setSortTag("Alphabetically");
+        recipeList.sort();
+        recipeList.setSortTag("First Created");
+        recipeList.sort();
+        assertEquals("f", recipeList.get(0).getTitle());
+        assertEquals("u", recipeList.get(1).getTitle());
+        assertEquals("a", recipeList.get(2).getTitle());
+    }
+    @Test
+    public void testSortLastCreated() throws InterruptedException {
+        recipeList.clear();
+        recipeList.add(new Recipe("f", "", "", ""));
+        TimeUnit.SECONDS.sleep(1);
+        recipeList.add(new Recipe("u", "", "", ""));
+        TimeUnit.SECONDS.sleep(1);
+        recipeList.add(new Recipe("a", "", "", ""));
+        recipeList.setSortTag("Alphabetically");
+        recipeList.sort();
+        recipeList.setSortTag("Last Created");
+        recipeList.sort();
+        assertEquals("a", recipeList.get(0).getTitle());
+        assertEquals("u", recipeList.get(1).getTitle());
+        assertEquals("f", recipeList.get(2).getTitle());   
     }
 }
 
