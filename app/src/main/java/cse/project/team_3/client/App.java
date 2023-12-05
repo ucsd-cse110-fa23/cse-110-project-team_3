@@ -1,6 +1,7 @@
 
 package cse.project.team_3.client;
 
+import cse.project.team_3.server.MyServer;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -11,6 +12,7 @@ public class App extends Application {
 
         // Setting the Layout of the Window (Flow Pane)
         // AppFrame root = new AppFrame();
+        MyServer.startServer();
 
         RecipeList recipeList = new RecipeList();
         Recipe recipe1 = new Recipe("Pizza", "Pizza recipe", "Lunch", "Tomatoes");

@@ -35,5 +35,8 @@ public class View {
     public void setRecipeView(RecipeView recipeView) {
         this.recipeView = recipeView;
     }
+    public void setAudioPrompt(AudioPrompt audioPrompt) {
+        this.audioPrompt = audioPrompt;
+    }
 
 }

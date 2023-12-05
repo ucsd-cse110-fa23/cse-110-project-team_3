@@ -71,11 +71,17 @@ public class RequestHandler implements HttpHandler {
             String transcriptionResult = Whisper.transcribeAudio(combinedAudioFile);
             System.out.println("Transcribed Audio: \n" + transcriptionResult);
 
-            String[] recipe = transcriptionResult.split(",", 2);
+            String temp = transcriptionResult.replace(",", ";");
+            temp = temp.replace(".", ";");
+            String[] recipe = temp.split(";", 2);
             String mealType = recipe[0];
+            if(mealType.startsWith("B") || mealType.startsWith("b")) {
+                mealType = "Breakfast";
+            }
+            System.out.println("Meal Type: " + mealType);
             String ingredients = recipe[1];
 
-            String generatedRecipe = ChatGPT.generateResponse("give me a " + mealType + " recipe using " + ingredients);
+            String generatedRecipe = ChatGPT.generateResponse("give me a " + mealType + " recipe using " + ingredients + " without using fractions");
             System.out.println("Generated Recipe: \n" + generatedRecipe);
 
             String imageURL = DallE.generateImage(generatedRecipe);
@@ -93,7 +99,7 @@ public class RequestHandler implements HttpHandler {
             // String retrievedRecipe = data.getOrDefault(generatedID, "Recipe not found");
             //RecipeImagePair pair = new RecipeImagePair(generatedRecipe, imageURL);
             //JSONObject pairJson = pairToJson(pair);
-            return generatedRecipe + ";" + imageURL;
+            return generatedRecipe + ";" + mealType.trim() + ";" + ingredients.trim();
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return null;

@@ -137,7 +137,7 @@ public class Model {
                 StringBuilder response = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    response.append(line);
+                    response.append(line + "\n");
                 }
                 reader.close();
                 return response.toString();

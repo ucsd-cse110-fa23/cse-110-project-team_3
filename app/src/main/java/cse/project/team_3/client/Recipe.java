@@ -21,6 +21,24 @@ public class Recipe {
         this.ingredients = ingredients;
         this.dateCreated = java.time.LocalDate.now().toString();
     }
+    public Recipe(String fullRecipe) {
+        String[] adjustedRecipe = fullRecipe.split(";", 3);
+        this.mealType = adjustedRecipe[1];
+        this.ingredients = adjustedRecipe[2];
+        System.out.println(mealType);
+        System.out.println(ingredients);
+        String adjustedTitleBody = adjustedRecipe[0].trim();
+        String[] split = adjustedTitleBody.split("\n", 3);
+        if (split.length >= 3) {
+            this.title = (split[0]);
+            this.body = (split[2]);
+        }
+        else {
+            this.title = "error handling title";
+            this.body = "error handling body";
+        }
+        this.dateCreated = java.time.LocalDate.now().toString();
+    }
 
     public String getTitle() {
         return title;
