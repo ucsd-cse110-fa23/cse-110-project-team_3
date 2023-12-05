@@ -131,7 +131,12 @@ public class RequestHandler implements HttpHandler {
         try {
             String transcriptionResult = Whisper.transcribeAudio(combinedAudioFile);
             System.out.println("Transcribed Audio: \n" + transcriptionResult);
-            String generatedRecipe = ChatGPT.generateResponse(transcriptionResult);
+
+            String[] recipe = transcriptionResult.split(",", 2);
+            String mealType = recipe[0];
+            String ingredients = recipe[1];
+
+            String generatedRecipe = ChatGPT.generateResponse("give me a " + mealType + " recipe using " + ingredients);
             System.out.println("Generated Recipe: \n" + generatedRecipe);
 
             String generatedID = generateUniqueId();
