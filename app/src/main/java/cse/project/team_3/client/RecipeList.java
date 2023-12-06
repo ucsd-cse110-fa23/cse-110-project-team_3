@@ -31,12 +31,12 @@ public class RecipeList {
         this.filterTag = filterTag;
     }
 
-    public List<Recipe> getRecipeList() {
-        return recipeList;
-    }
-
     public List<Recipe> getVisibleRecipeList() {
         return visibleRecipeList;
+    }
+
+    public List<Recipe> getRecipeList() {
+        return recipeList;
     }
 
     /*
