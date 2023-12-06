@@ -156,8 +156,7 @@ class RecipeAppFrame extends BorderPane {
     }
 
     public void setRecipeBody(String text, String fileName) {
-        File file = new File("Images/" + fileName);
-        Image image = new Image(file.toURI().toString());
+        Image image = new Image(fileName.toURI().toString());
         recipeBody = new RecipeBody(text);
         recipeBody.getImageView().setImage(image);
         scroll.setContent(recipeBody);
