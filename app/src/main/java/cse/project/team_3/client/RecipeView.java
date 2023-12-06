@@ -14,6 +14,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
+import java.io.File;
 
 class RecipeBody extends VBox {
     TextArea text;
@@ -49,9 +50,10 @@ class RecipeBody extends VBox {
         imageView.setImage(image);
     }
 
-    public Image getImage() {
-        return imageView.getImage();
+    public ImageView getImageView() {
+        return imageView;
     }
+
     public void clearRecipeImage() {
         imageView.setImage(null);
     }
@@ -150,11 +152,14 @@ class RecipeAppFrame extends BorderPane {
             Image image = new Image(imageURL); // DallE generated image
             recipeBody.setImage(image);
         }
-        //else { recipeBody.clearRecipeImage(); }
+        // else { recipeBody.clearRecipeImage(); }
     }
 
-    public void setRecipeBody(String text) {
+    public void setRecipeBody(String text, String fileName) {
+        File file = new File("Images/" + fileName);
+        Image image = new Image(file.toURI().toString());
         recipeBody = new RecipeBody(text);
+        recipeBody.getImageView().setImage(image);
         scroll.setContent(recipeBody);
     }
 
@@ -164,16 +169,18 @@ class RecipeAppFrame extends BorderPane {
     }
 
     public void buildRecipe(Recipe recipe) {
-        setRecipeBody(recipe.getBody());
+        setRecipeBody(recipe.getBody(), recipe.getImageFileName());
         setRecipeHeader(recipe.getTitle());
     }
 
     public RecipeFooter getFooter() {
         return footer;
     }
+
     public RecipeHeader getHeader() {
         return header;
     }
+
     public RecipeBody getRecipeBody() {
         return recipeBody;
     }

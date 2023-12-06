@@ -152,7 +152,7 @@ public class RequestHandler implements HttpHandler {
             // String retrievedRecipe = data.getOrDefault(generatedID, "Recipe not found");
             // RecipeImagePair pair = new RecipeImagePair(generatedRecipe, imageURL);
             // JSONObject pairJson = pairToJson(pair);
-            return generatedRecipe + ";" + mealType.trim() + ";" + ingredients.trim();
+            return generatedRecipe + ";" + mealType.trim() + ";" + imageURL + ";" + ingredients.trim();
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return null;
