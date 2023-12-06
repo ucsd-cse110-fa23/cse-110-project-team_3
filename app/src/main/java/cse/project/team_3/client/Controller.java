@@ -19,6 +19,8 @@ public class Controller {
     private Model model;
     private View view;
     private RecipeList recipeList;
+    private String mealType;
+    private String ingredients;
 
     public Controller(Model model, View view) {
 
@@ -179,6 +181,11 @@ public class Controller {
      * @param recipe The recipe that will be used to construct the UI
      */
     public void showRecipeView(Recipe recipe) throws Exception {
+
+        // Get current meal type and ingredients
+        this.mealType = recipe.getMealType();
+        this.ingredients = recipe.getIngredients();
+
         view.setRecipeView(new RecipeView(recipe));
         view.getRecipeView().start(new Stage());
 
@@ -290,7 +297,7 @@ public class Controller {
      * This method handles refreshing the newly created recipe
      */
     private void handleRefreshRecipe() {
-        model.refreshRecipe();
+        model.refreshRecipe(mealType, ingredients);
     }
 
     public boolean handleServerStatus(ActionEvent event) {

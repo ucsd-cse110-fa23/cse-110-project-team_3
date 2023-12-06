@@ -23,6 +23,7 @@ import java.util.Map;
 import com.mongodb.client.*;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.function.BiConsumer;
 
@@ -85,6 +86,7 @@ public class Model {
                 // You can read the server response if needed
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 StringBuilder response = new StringBuilder();
+                System.out.println("RESPONSE" + response);
                 String line;
                 while ((line = reader.readLine()) != null) {
                     response.append(line);
@@ -207,7 +209,7 @@ public class Model {
         }
 
         this.view.getAudioPrompt().setStopCtr(1);
-        
+
         isRecording = false;
         this.view.getAudioPrompt().setRecordingState(isRecording);
 
@@ -388,68 +390,8 @@ public class Model {
         }
     }
 
-    // Getter methods for most recent user input
-    public String getLastUsedMealType() {
-        return currentMealType;
+    public void refreshRecipe(String mealType, String ingredients) {
+        // TODO?
     }
-    public String getLastUsedIngredients() {
-        return currentIngredients;
-    }
-    public String getTranscriptionResult() {
-        return transcriptionResult;
-    }
-
-    public void refreshRecipe() {
-        // Test print
-        System.out.println("TESTING1 --> " + currentMealType);
-        System.out.println("TESTING2 --> " + currentIngredients);
-        // Check if mealType and ingredients are available
-        if (currentMealType != null && currentIngredients != null) {
-            // Construct the prompt for the new recipe
-            String prompt = currentMealType + " " + currentIngredients;
-
-            try {
-                // Send prompt to server
-                URL url = new URL("http://localhost:8100/refresh"); // Adjust the URL as per your server's endpoint
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setDoOutput(true);
-                connection.setRequestProperty("Content-Type", "application/json");
-
-                // Create JSON object with the prompt
-                JSONObject json = new JSONObject();
-                json.put("prompt", prompt);
-
-                // Write JSON to the request
-                try (OutputStream os = connection.getOutputStream()) {
-                    byte[] input = json.toString().getBytes("utf-8");
-                    os.write(input, 0, input.length);
-                }
-
-                // Read the response from the server
-                try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
-                    StringBuilder response = new StringBuilder();
-                    String responseLine;
-                    while ((responseLine = br.readLine()) != null) {
-                        response.append(responseLine.trim());
-                    }
-                    System.out.println(response.toString());
-
-                    // Extract recipe and image URL from the response
-                    JSONObject jsonResponse = new JSONObject(response.toString());
-                    String newRecipe = jsonResponse.getString("recipe");
-                    String newImageURL = jsonResponse.getString("imageURL");
-
-                    // Update UI with new recipe and image
-                    Platform.runLater(() -> view.getRecipeView().getRoot().updateRecipeDetails(newRecipe, newImageURL));
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                // Handle exceptions or server errors
-            }
-        } else {
-            // Handle the case where mealType and ingredients are not set
-            System.out.println("Meal type and ingredients are not available for refresh.");
-        }
-    }
+     
 }
