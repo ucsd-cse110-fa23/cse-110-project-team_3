@@ -2,6 +2,9 @@ package cse.project.team_3.client;
 
 import java.io.BufferedReader;
 import java.nio.file.Files;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import javax.sound.sampled.*;
 import cse.project.team_3.client.AudioPrompt.AudioPromptState;
 import javafx.application.Platform;
@@ -24,6 +27,7 @@ import com.mongodb.client.*;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.json.JSONObject;
+import com.mongodb.client.MongoCollection;
 
 public class Model {
     private AudioFormat audioFormat;
@@ -203,7 +207,7 @@ public class Model {
         }
 
         this.view.getAudioPrompt().setStopCtr(1);
-        
+
         isRecording = false;
         this.view.getAudioPrompt().setRecordingState(isRecording);
 
@@ -337,41 +341,103 @@ public class Model {
     public boolean loginIsValid(String username, String password) {
         // check with db to see if login is valid
         String uri = "mongodb+srv://sminowada1:4j5atYmTK9suF0Rp@cluster0.l0dnisn.mongodb.net/?retryWrites=true&w=majority";
-        // Query login info
-        // Currently have a dummy profile
-        // User: TestUser
-        // Pass: TestPass
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase recipeDB = mongoClient.getDatabase("RecipeDB");
-            MongoCollection<Document> recipeCollection = recipeDB.getCollection("Login");
-
+            MongoCollection<Document> recipeCollection = recipeDB.getCollection(username);
             // find one document with new Document
             Document recipe = recipeCollection.find(new Document(username, password)).first();
             if (recipe != null) {
-                System.out.println("Recipe: " + recipe.toJson());
                 return true;
             }
             return false;
         }
     }
 
+    // Check if the user already has an account
     public boolean createIsValid(String username, String password) {
         String uri = "mongodb+srv://sminowada1:4j5atYmTK9suF0Rp@cluster0.l0dnisn.mongodb.net/?retryWrites=true&w=majority";
         MongoClient mongoClient = MongoClients.create(uri);
         MongoDatabase recipeDB = mongoClient.getDatabase("RecipeDB");
-        MongoCollection<Document> recipeCollection = recipeDB.getCollection("Login");
-        Document recipe = recipeCollection.find(new Document(username, password)).first();
-
-        if (recipe != null) {
+        MongoCollection<Document> recipeCollection = recipeDB.getCollection(username);
+        long documentCount = recipeCollection.countDocuments();
+        if (documentCount > 0) {
+            System.out.println("have account");
             return false;
-        }
-        // find one document with new Document
+        } else {
+            MongoCollection<Document> recipeCollection1 = recipeDB.getCollection(username);
+            Document newLogin = new Document("_id", new ObjectId());
+            newLogin.append(username, password);
+            recipeCollection1.insertOne(newLogin);
+            System.out.println("dont have account");
 
-        Document login = new Document("_id", new ObjectId());
-        login.append(username, password);
-        recipeCollection.insertOne(login);
+            // add dummy recipe for testing
+            // Document newRecipe = new Document("_id", new ObjectId());
+            // newRecipe.append("Recipe Name", "test")
+            // .append("Directions", "test123")
+            // .append("Meal", "Breakfast")
+            // .append("Ingredients", "cheese")
+            // .append("Date", LocalDateTime.now().toString());
+            // recipeCollection1.insertOne(newRecipe);
+
+        }
         return true;
 
+    }
+
+    // On start up pull recipes from DB
+    public RecipeList getRecipes(String user, String pass) {
+        String uri = "mongodb+srv://sminowada1:4j5atYmTK9suF0Rp@cluster0.l0dnisn.mongodb.net/?retryWrites=true&w=majority";
+        MongoClient mongoClient = MongoClients.create(uri);
+        MongoDatabase recipeDB = mongoClient.getDatabase("RecipeDB");
+        MongoCollection<Document> recipeCollection = recipeDB.getCollection(user);
+        MongoCursor<Document> cursor = recipeCollection.find().iterator();
+        RecipeList tempList = new RecipeList();
+        while (cursor.hasNext()) {
+            Recipe temp = recipeHelper(cursor.next());
+            if (temp.getTitle() != null) {
+                tempList.add(temp);
+            }
+        }
+        return tempList;
+    }
+
+    public Recipe recipeHelper(Document cursor) {
+        String name = cursor.getString("Recipe Name");
+        String directions = cursor.getString("Directions");
+        String meal = cursor.getString("Meal");
+        String ingredients = cursor.getString("Ingredients");
+        String date = cursor.getString("Date");
+        Recipe temp = new Recipe(name, directions, meal, ingredients);
+        if (name != null) {
+            LocalDateTime dateCreated = LocalDateTime.parse(date);
+            temp.setDateCreated(dateCreated);
+        }
+        return temp;
+
+    }
+
+    // On close store recipes in DB
+    public void recipeToDB(String username, String password, RecipeList recipeList) {
+        String uri = "mongodb+srv://sminowada1:4j5atYmTK9suF0Rp@cluster0.l0dnisn.mongodb.net/?retryWrites=true&w=majority";
+        MongoClient mongoClient = MongoClients.create(uri);
+        MongoDatabase recipeDB = mongoClient.getDatabase("RecipeDB");
+        MongoCollection<Document> recipeCollection = recipeDB.getCollection(username);
+        recipeCollection.drop();
+
+        // add login info
+        Document newLogin = new Document("_id", new ObjectId());
+        newLogin.append(username, password);
+        recipeCollection.insertOne(newLogin);
+        // add recipes
+        for (Recipe recipe : recipeList.getRecipeList()) {
+            Document newRecipe = new Document("_id", new ObjectId());
+            newRecipe.append("Recipe Name", recipe.getTitle())
+                    .append("Directions", recipe.getBody())
+                    .append("Meal", recipe.getMealType())
+                    .append("Ingredients", recipe.getIngredients())
+                    .append("Date", recipe.getDateCreated().toString());
+            recipeCollection.insertOne(newRecipe);
+        }
     }
 
     public boolean serverRunning() {

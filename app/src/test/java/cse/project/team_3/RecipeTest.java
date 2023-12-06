@@ -2,6 +2,8 @@ package cse.project.team_3;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.Test;
 
 import cse.project.team_3.client.Recipe;
@@ -19,6 +21,7 @@ public class RecipeTest {
         assertEquals(expectedMealType, recipe.getMealType());
         assertEquals(expectedIngredients, recipe.getIngredients());
     }
+
     @Test
     public void testSpecifiedConstructor() {
         Recipe recipe = new Recipe("Pizza", "Pizza Recipe", "Lunch", "Dough");
@@ -31,6 +34,7 @@ public class RecipeTest {
         assertEquals(expectedMealType, recipe.getMealType());
         assertEquals(expectedIngredients, recipe.getIngredients());
     }
+
     @Test
     public void testSetters() {
         Recipe recipe = new Recipe();
@@ -38,12 +42,13 @@ public class RecipeTest {
         recipe.setBody("Pizza Recipe");
         recipe.setMealType("Lunch");
         recipe.setIngredients("Dough");
-        recipe.setDateCreated("1");
+        LocalDateTime expectedDateCreated = LocalDateTime.now();
+        recipe.setDateCreated(expectedDateCreated);
         String expectedTitle = "Pizza";
         String expectedBody = "Pizza Recipe";
         String expectedMealType = "Lunch";
         String expectedIngredients = "Dough";
-        String expectedDateCreated = "1";
+
         assertEquals(expectedTitle, recipe.getTitle());
         assertEquals(expectedBody, recipe.getBody());
         assertEquals(expectedMealType, recipe.getMealType());
@@ -51,4 +56,3 @@ public class RecipeTest {
         assertEquals(expectedDateCreated, recipe.getDateCreated());
     }
 }
-

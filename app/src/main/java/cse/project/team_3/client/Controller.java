@@ -48,7 +48,7 @@ public class Controller {
     private void handleStopButton(ActionEvent event) {
         if (this.view.getAudioPrompt().getStopCtr() == 0) {
             model.stopRecording();
-        }else{
+        } else {
             String response = model.performRequest("PUT");
             System.out.println("Controller Response: " + response);
             Recipe newRecipe = new Recipe(response);
@@ -87,11 +87,11 @@ public class Controller {
                     writer.println(password);
                     writer.close();
                 }
-                // TODO: Pull account details from database and add existing recipes to
-                // recipeList
+                RecipeList recipesDB = model.getRecipes(username, password);
+                setRecipeList(recipesDB);
                 showRecipeListView();
             } catch (Exception e) {
-                // TODO: handle exception
+                System.out.println("exception");
             }
         } else {
             System.out.println("Invalid login");
@@ -102,6 +102,7 @@ public class Controller {
         String username = this.view.getLoginView().getloginVW().getLogin().getUserInput().getText();
         String password = this.view.getLoginView().getloginVW().getLogin().getPassInput().getText();
         boolean response = model.performLogin("POST", username, password);
+        System.out.println(response);
         if (response != false) {
             try {
                 boolean stayLoggedIn = this.view.getLoginView().getloginVW().getLogin().getCheckBox();
@@ -111,14 +112,11 @@ public class Controller {
                     writer.println(password);
                     writer.close();
                 }
-                // TODO: Add account to database
                 showRecipeListView();
             } catch (Exception e) {
-                // TODO: handle exception
             }
         } else {
             System.out.println("Login already exists");
-            // load in saved recipe list from account
         }
 
     }
@@ -135,7 +133,7 @@ public class Controller {
         newAudioPrompt.getStopButton().setOnAction(e -> {
             if (newAudioPrompt.getStopCtr() == 0) {
                 model.stopRecording();
-            }else{
+            } else {
                 String response = model.performRequest("PUT");
                 System.out.println("Controller Response: " + response);
                 Recipe newRecipe = new Recipe(response);
@@ -160,7 +158,7 @@ public class Controller {
         // Event handler for add button
         view.getRecipeListView().getRoot().getFooter().getAddButton().setOnAction(e -> {
             showAudioPrompt();
-            //AudioPrompt.setupAudioPrompt(new Stage(), this.view.getAudioPrompt());
+            // AudioPrompt.setupAudioPrompt(new Stage(), this.view.getAudioPrompt());
             System.out.println("Add Button Pressed");
         });
 
@@ -168,6 +166,11 @@ public class Controller {
         view.getRecipeListView().getRoot().getFooter().getSaveButton().setOnAction(e -> {
             // TODO: make this button save all recipes in the recipe list to a JSON object
             ((Stage) (((Button) e.getSource()).getScene().getWindow())).close();
+            String username = this.view.getLoginView().getloginVW().getLogin().getUserInput().getText();
+            String password = this.view.getLoginView().getloginVW().getLogin().getPassInput().getText();
+            System.out.println("closing");
+            System.out.println(this.recipeList.size());
+            model.recipeToDB(username, password, this.recipeList);
         });
     }
 
@@ -184,7 +187,7 @@ public class Controller {
         // Event handler for the save recipe button
         view.getRecipeView().getRoot().getFooter().getSaveRecipeButton().setOnAction(e -> {
             // Add the recipe to the recipeList and then update the Recipe List View UI
-            this.recipeList.add(recipe);
+            this.recipeList.add(view.getRecipeView().getRecipe());
             updateRecipeListView();
             // Close the Recipe View UI
             ((Stage) (((Button) e.getSource()).getScene().getWindow())).close();

@@ -59,6 +59,7 @@ class RecipeBody extends VBox {
     public Image getImage() {
         return imageView.getImage();
     }
+
     public void clearRecipeImage() {
         imageView.setImage(null);
     }
@@ -157,7 +158,7 @@ class RecipeAppFrame extends BorderPane {
             Image image = new Image(imageURL); // DallE generated image
             recipeBody.setImage(image);
         }
-        //else { recipeBody.clearRecipeImage(); }
+        // else { recipeBody.clearRecipeImage(); }
     }
 
     public void setRecipeBody(String text) {
@@ -179,6 +180,13 @@ class RecipeAppFrame extends BorderPane {
         return footer;
     }
 
+    public RecipeHeader getHeader() {
+        return header;
+    }
+
+    public RecipeBody getRecipeBody() {
+        return recipeBody;
+    }
 }
 
 public class RecipeView extends Application {
@@ -217,7 +225,10 @@ public class RecipeView extends Application {
     }
 
     public Recipe getRecipe() {
-        return recipe;
+        String title = root.getHeader().getTitleText();
+        String body = root.getRecipeBody().getText();
+        Recipe toReturn = new Recipe(title, body, recipe.getMealType(), recipe.getIngredients());
+        return toReturn;
     }
 
     public RecipeAppFrame getRoot() {

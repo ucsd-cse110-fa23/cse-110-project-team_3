@@ -1,38 +1,19 @@
 package cse.project.team_3.client;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.geometry.Insets;
 import javafx.scene.text.*;
-import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
-
-import javax.swing.text.View;
-
-import javax.swing.text.View;
-
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.stage.FileChooser.ExtensionFilter;
-
-// New imports
-import javafx.scene.control.ComboBox;
 
 class RecipeViewRecipe extends HBox {
     private Label recipeNameLabel;
@@ -57,12 +38,10 @@ class RecipeViewRecipe extends HBox {
         this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;");
 
         recipeNameLabel = new Label(recipe.getTitle());
-        recipeNameLabel = new Label(recipe.getTitle());
         recipeNameLabel.setFont(Font.font("Arial", 12));
         recipeNameLabel.setPrefSize(300, 20);
         recipeNameLabel.setPadding(new Insets(10, 0, 10, 0));
 
-        mealTypeLabel = new Label(recipe.getMealType());
         mealTypeLabel = new Label(recipe.getMealType());
         mealTypeLabel.setFont(Font.font("Arial", 12));
         mealTypeLabel.setPrefSize(80, 20);
@@ -76,8 +55,7 @@ class RecipeViewRecipe extends HBox {
         deleteButton.setPrefSize(70, 20);
         deleteButton.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0;");
 
-        dateCreatedLabel = new Label(recipe.getDateCreated());
-        dateCreatedLabel = new Label(recipe.getDateCreated());
+        dateCreatedLabel = new Label(recipe.getDateCreated().toLocalDate().toString());
         dateCreatedLabel.setFont(Font.font("Arial", 12));
         dateCreatedLabel.setPrefSize(80, 20);
         dateCreatedLabel.setPadding(new Insets(10, 0, 10, 0));
@@ -120,16 +98,15 @@ class RecipeViewRecipe extends HBox {
     public void toDelete() {
         this.toDelete = true;
     }
-    
+
     public boolean isDelete() {
         return toDelete;
     }
-    
+
     public String getBody() {
         return body;
     }
 }
-
 
 class RecipeListBox extends VBox {
     RecipeListBox() {
@@ -171,9 +148,11 @@ class RecipeListBox extends VBox {
     }
 
     public void removeRecipe() {
-        this.getChildren().removeIf(recipe -> recipe instanceof RecipeViewRecipe && ((RecipeViewRecipe) recipe).isDelete());
+        this.getChildren()
+                .removeIf(recipe -> recipe instanceof RecipeViewRecipe && ((RecipeViewRecipe) recipe).isDelete());
         this.updateRecipeIndices();
     }
+
     public void removeAllRecipes() {
         this.getChildren().removeIf(recipe -> recipe instanceof RecipeViewRecipe);
         this.updateRecipeIndices();
@@ -185,6 +164,7 @@ class RecipeViewFooter extends HBox {
     private Button addButton;
     private ComboBox<String> sortDrop; // ComboBox for sorting options
     private Button saveButton;
+    private ComboBox<String> filterDrop;
 
     RecipeViewFooter() {
         this.setPrefSize(500, 60);
@@ -202,9 +182,14 @@ class RecipeViewFooter extends HBox {
         // Initialize the ComboBox for sorting options
         sortDrop = new ComboBox<>();
         sortDrop.setPromptText("Sort By"); // Placeholder text for the ComboBox
-        sortDrop.getItems().addAll("Meal Type", "Date Created"); // Options for sorting
+        sortDrop.getItems().addAll("A-Z", "Z-A", "First Created", "Last Created"); // Options for sorting
 
-        this.getChildren().addAll(addButton, saveButton, sortDrop); // Adding the buttons and ComboBox to the footer
+        filterDrop = new ComboBox<>();
+        filterDrop.setPromptText("Filter By");
+        filterDrop.getItems().addAll("Breakfast", "Lunch", "Dinner", "All");
+
+        this.getChildren().addAll(addButton, saveButton, sortDrop, filterDrop); // Adding the buttons and ComboBox to
+                                                                                // the footer
         this.setAlignment(Pos.CENTER); // Aligning the buttons to the center
     }
 
@@ -215,8 +200,13 @@ class RecipeViewFooter extends HBox {
     public ComboBox<String> getSortDrop() {
         return sortDrop;
     }
+
     public Button getSaveButton() {
         return saveButton;
+    }
+
+    public ComboBox<String> getFilterDrop() {
+        return filterDrop;
     }
 }
 
@@ -229,7 +219,7 @@ class RecipeViewHeader extends HBox {
         titleText.setStyle("-fx-font-weight: bold; -fx-font-size: 20;");
         this.getChildren().add(titleText);
         this.setAlignment(Pos.CENTER); // Align the text to the Center Left
-        
+
     }
 }
 
@@ -279,7 +269,6 @@ class RecipeListAppFrame extends BorderPane {
 
 }
 
-
 public class RecipeListView extends Application {
     RecipeListAppFrame root;
 
@@ -293,16 +282,20 @@ public class RecipeListView extends Application {
         // Show the app
         primaryStage.show();
     }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Setting the Layout of the Window - Should contain a Header, Footer, and the RecipeList
+        // Setting the Layout of the Window - Should contain a Header, Footer, and the
+        // RecipeList
         root = new RecipeListAppFrame();
-        //populateWithExistingRecipes(this.recipeList);
+        // populateWithExistingRecipes(this.recipeList);
         setupRecipeList(primaryStage, root);
     }
+
     public RecipeListAppFrame getRoot() {
         return root;
     }
+
     public void clearRecipes() {
         root.getRecipeList().removeAllRecipes();
     }
