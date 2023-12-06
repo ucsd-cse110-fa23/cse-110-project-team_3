@@ -17,7 +17,7 @@ public class AudioPrompt extends FlowPane {
     private Button startButton;
     private Button stopButton;
     private Label recordingLabel;
-    private AudioPromptState currState;
+    private int currState;
     private int stopCtr;
 
     // Set a default style for buttons and fields - background color, font size,
@@ -41,7 +41,7 @@ public class AudioPrompt extends FlowPane {
         this.setPrefWrapLength(370);
         this.setPrefHeight(100);
 
-        currState = AudioPromptState.FILTER;
+        currState = 0;
         stopCtr = 0;
 
         stateLabel = new Label("\"Voice: Meal type: Breakfast, Lunch, Dinner\"");
@@ -71,7 +71,7 @@ public class AudioPrompt extends FlowPane {
         primaryStage.show();
     }
 
-    public AudioPromptState getCurrState() {
+    public int getCurrState() {
         return currState;
     }
 
@@ -103,21 +103,21 @@ public class AudioPrompt extends FlowPane {
         Platform.runLater(() -> {
             String labelText = stateLabel.getText();
             if (labelText.contains("Meal type")) {
-                currState = AudioPromptState.FILTER;
+                currState = 0;
             } else if (labelText.contains("Input your Ingredients")) {
-                currState = AudioPromptState.INGREDIENTS;
+                currState = 1;
             }
         });
     }
 
     public void setFilterAction() {
-        currState = AudioPromptState.FILTER;
+        currState = 0;
         stateLabel.setText("Voice: Meal type: Breakfast, Lunch, Dinner");
         stateLabel.setStyle(defaultFilterLabelStyle);
     }
 
     public void setIngredientAction() {
-        currState = AudioPromptState.INGREDIENTS;
+        currState = 1;
         stateLabel.setText("Voice: Input your Ingredients");
         stateLabel.setStyle(defaultFilterLabelStyle);
     }

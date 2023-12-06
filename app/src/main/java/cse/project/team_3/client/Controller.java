@@ -5,7 +5,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.TargetDataLine;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
@@ -14,6 +21,12 @@ public class Controller {
     private Model model;
     private View view;
     private RecipeList recipeList;
+    Boolean isRecording;
+    private Thread recordingThread;
+    private File mealTypeAudioFile;
+    private File ingredientAudioFile;
+    private AudioFormat audioFormat;
+    private TargetDataLine targetDataLine;
 
     public Controller(Model model, View view) {
 
@@ -103,22 +116,56 @@ public class Controller {
         AudioPrompt.setupAudioPrompt(new Stage(), newAudioPrompt);
         this.view.setAudioPrompt(newAudioPrompt);
         newAudioPrompt.getStartButton().setOnAction(e -> {
-            String response = model.performRequest("POST");
-            System.out.println(response);
+            if (newAudioPrompt.getCurrState() == 0) {
+                startRecording("mealTypeAudio.wav");
+
+            } else if (newAudioPrompt.getCurrState() == 1) {
+                startRecording("ingredientAudio.wav");
+            }
         });
         newAudioPrompt.getStopButton().setOnAction(e -> {
             if (newAudioPrompt.getStopCtr() == 0) {
-                model.stopRecording();
-            }else{
-                String response = model.performRequest("PUT");
-                System.out.println("Controller Response: " + response);
-                Recipe newRecipe = new Recipe(response);
                 try {
-                    showRecipeView(newRecipe);
-                } catch (Exception exception) {
-                    exception.printStackTrace();
+                    stopRecording();
+                } catch (IOException | URISyntaxException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
                 }
+                
+            } else{
+                String[] whisperResponse = {"error", "error"};
+                try {
+                    whisperResponse = stopRecording();
+                } catch (IOException | URISyntaxException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                String prompt = "Make me a " + whisperResponse[0] + " recipe using " + whisperResponse[1];
+                String chatGPTResponse = "error";
+                String dallEResponse = "error";
+                try {
+                    chatGPTResponse = callChatGPT(prompt);
+                    dallEResponse = callDallE(chatGPTResponse);
+                } catch (Exception e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                view.getAudioPrompt().setStopCtr(1);
                 ((Stage) (((Button) e.getSource()).getScene().getWindow())).close();
+                String[] recipeArray = new String[4];
+                recipeArray[0] = chatGPTResponse;
+                recipeArray[1] = whisperResponse[0];
+                recipeArray[2] = whisperResponse[1];
+                recipeArray[3] = dallEResponse;
+                Recipe recipe;
+                try {
+                    recipe = new Recipe(recipeArray);
+                    showRecipeView(recipe);
+                } catch (Exception e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                updateRecipeListView();
             }
         });
     }
@@ -268,5 +315,127 @@ public class Controller {
             return true;
         }
         return false;
+    }
+
+    public void startRecording(String filePath) {
+        if (recordingThread == null || !recordingThread.isAlive()) {
+            recordingThread = new Thread(() -> {
+                File audioFile = new File(filePath);
+                audioFormat = getAudioFormat();
+                try {
+                    DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
+                    targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
+                    targetDataLine.open(audioFormat);
+                    targetDataLine.start();
+
+                    // Flag to indicate whether recording is in progress
+                    isRecording = true;
+                    view.getAudioPrompt().setRecordingState(isRecording);
+
+                    if (view.getAudioPrompt().getCurrState() == 0) {
+                        mealTypeAudioFile = audioFile;
+                    } else if (view.getAudioPrompt().getCurrState() == 1) {
+                        ingredientAudioFile = audioFile;
+                    }
+
+                    // the AudioInputStream that will be used to write the audio data to a file
+                    AudioInputStream audioInputStream = new AudioInputStream(
+                            targetDataLine);
+
+                    // the file that will contain the audio data
+                    AudioSystem.write(
+                            audioInputStream,
+                            AudioFileFormat.Type.WAVE,
+                            audioFile);
+
+                    // Simulate recording for 5 seconds
+                    for (int i = 0; i < 5; i++) {
+                        // Check for interruption during sleep
+                        if (Thread.interrupted()) {
+                            throw new InterruptedException("Recording thread interrupted during sleep.");
+                        }
+
+                        Thread.sleep(1000); // Sleep for 1 second
+                    }
+                } catch (InterruptedException ex) {
+                    // Handle the interruption gracefully
+                    System.out.println("Recording thread stopped.");
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
+            recordingThread.start();
+        }
+    }
+    public String[] stopRecording() throws IOException, URISyntaxException {
+        if (targetDataLine != null) {
+            targetDataLine.stop();
+            targetDataLine.close();
+        }
+
+        if (recordingThread != null && recordingThread.isAlive()) {
+            recordingThread.interrupt();
+            try {
+                recordingThread.join(); // Wait for the thread to finish
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        view.getAudioPrompt().setStopCtr(1);
+        
+        isRecording = false;
+        view.getAudioPrompt().setRecordingState(isRecording);
+
+        if (view.getAudioPrompt().getCurrState() == 0) {
+            view.getAudioPrompt().setIngredientAction();
+            view.getAudioPrompt().setCurrentStateBasedOnLabel();
+        } else {
+            // Check if both mealTypeAudioFile and ingredientAudioFile is null before
+            // combining
+            if (mealTypeAudioFile != null && ingredientAudioFile != null) {
+                String[] whisperResponse = new String[2];
+                whisperResponse[0] = ClientWhisper.transcribeAudio(mealTypeAudioFile);
+                whisperResponse[1] = ClientWhisper.transcribeAudio(ingredientAudioFile);
+                return whisperResponse;
+            } else {
+                // Handle the case where ingredientAudioFile is not available
+                System.out.println("Both audio files need to be created.");
+            }
+            view.getAudioPrompt().setFilterAction();
+            view.getAudioPrompt().setCurrentStateBasedOnLabel();
+        }
+        String[] error = {"error", "error"};
+        return error;
+    }
+    private AudioFormat getAudioFormat() {
+        // the number of samples of audio per second.
+        // 44100 represents the typical sample rate for CD-quality audio.
+        float sampleRate = 44100;
+
+        // the number of bits in each sample of a sound that has been digitized.
+        int sampleSizeInBits = 16;
+
+        // the number of audio channels in this format (1 for mono, 2 for stereo).
+        int channels = 1;
+
+        // whether the data is signed or unsigned.
+        boolean signed = true;
+
+        // whether the audio data is stored in big-endian or little-endian order.
+        boolean bigEndian = false;
+
+        return new AudioFormat(
+                sampleRate,
+                sampleSizeInBits,
+                channels,
+                signed,
+                bigEndian);
+    }
+    public String callChatGPT(String prompt) throws Exception {
+        return ClientChatGPT.generateResponse(prompt);
+    }
+    public String callDallE(String prompt) throws IOException, InterruptedException, URISyntaxException {
+        return ClientDallE.generateImage(prompt);
     }
 }

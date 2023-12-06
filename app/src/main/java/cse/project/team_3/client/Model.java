@@ -98,181 +98,181 @@ public class Model {
     }
 
     public String performRequest(String requestType) {
-        try {
-            URL url = new URL("http://localhost:8100/"); // Replace with your server endpoint
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        // try {
+        //     URL url = new URL("http://localhost:8100/"); // Replace with your server endpoint
+        //     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            // Set request method and headers
-            connection.setRequestMethod(requestType);
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                connection.setRequestProperty(entry.getKey(), entry.getValue());
-            }
+        //     // Set request method and headers
+        //     connection.setRequestMethod(requestType);
+        //     for (Map.Entry<String, String> entry : headers.entrySet()) {
+        //         connection.setRequestProperty(entry.getKey(), entry.getValue());
+        //     }
 
-            // Handle request based on requestType
-            switch (requestType) {
-                case "POST":
-                    // Start recording logic
-                    if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.FILTER) {
-                        startRecording("mealTypeAudio.wav");
-                    } else if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.INGREDIENTS) {
-                        startRecording("ingredientAudio.wav");
-                    }
-                    break;
-                case "PUT":
-                    // Stop recording logic
-                    stopRecording();
-                    break;
-                default:
-                    // Handle other request types if needed
-                    break;
-            }
+        //     // Handle request based on requestType
+        //     switch (requestType) {
+        //         case "POST":
+        //             // Start recording logic
+        //             if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.FILTER) {
+        //                 startRecording("mealTypeAudio.wav");
+        //             } else if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.INGREDIENTS) {
+        //                 startRecording("ingredientAudio.wav");
+        //             }
+        //             break;
+        //         case "PUT":
+        //             // Stop recording logic
+        //             stopRecording();
+        //             break;
+        //         default:
+        //             // Handle other request types if needed
+        //             break;
+        //     }
 
-            // Get the server response
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                // Successfully sent the request to the server
-                // You can read the server response if needed
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line + "\n");
-                }
-                reader.close();
-                return response.toString();
-            } else {
-                // Handle the error case
-                System.out.println("Failed to send the request. Response Code: " + responseCode);
-            }
+        //     // Get the server response
+        //     int responseCode = connection.getResponseCode();
+        //     if (responseCode == HttpURLConnection.HTTP_OK) {
+        //         // Successfully sent the request to the server
+        //         // You can read the server response if needed
+        //         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        //         StringBuilder response = new StringBuilder();
+        //         String line;
+        //         while ((line = reader.readLine()) != null) {
+        //             response.append(line + "\n");
+        //         }
+        //         reader.close();
+        //         return response.toString();
+        //     } else {
+        //         // Handle the error case
+        //         System.out.println("Failed to send the request. Response Code: " + responseCode);
+        //     }
 
-            // Close the connection
-            connection.disconnect();
+        //     // Close the connection
+        //     connection.disconnect();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // } catch (IOException e) {
+        //     e.printStackTrace();
+        // }
 
         return null; // Return null if there is an error
     }
 
     private void startRecording(String filePath) {
-        if (recordingThread == null || !recordingThread.isAlive()) {
-            recordingThread = new Thread(() -> {
-                File audioFile = new File(filePath);
-                audioFormat = getAudioFormat();
-                try {
-                    DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
-                    targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
-                    targetDataLine.open(audioFormat);
-                    targetDataLine.start();
+        // if (recordingThread == null || !recordingThread.isAlive()) {
+        //     recordingThread = new Thread(() -> {
+        //         File audioFile = new File(filePath);
+        //         audioFormat = getAudioFormat();
+        //         try {
+        //             DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
+        //             targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
+        //             targetDataLine.open(audioFormat);
+        //             targetDataLine.start();
 
-                    // Flag to indicate whether recording is in progress
-                    isRecording = true;
-                    this.view.getAudioPrompt().setRecordingState(isRecording);
+        //             // Flag to indicate whether recording is in progress
+        //             isRecording = true;
+        //             this.view.getAudioPrompt().setRecordingState(isRecording);
 
-                    if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.FILTER) {
-                        mealTypeAudioFile = audioFile;
-                    } else if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.INGREDIENTS) {
-                        ingredientAudioFile = audioFile;
-                    }
+        //             if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.FILTER) {
+        //                 mealTypeAudioFile = audioFile;
+        //             } else if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.INGREDIENTS) {
+        //                 ingredientAudioFile = audioFile;
+        //             }
 
-                    // the AudioInputStream that will be used to write the audio data to a file
-                    AudioInputStream audioInputStream = new AudioInputStream(
-                            targetDataLine);
+        //             // the AudioInputStream that will be used to write the audio data to a file
+        //             AudioInputStream audioInputStream = new AudioInputStream(
+        //                     targetDataLine);
 
-                    // the file that will contain the audio data
-                    AudioSystem.write(
-                            audioInputStream,
-                            AudioFileFormat.Type.WAVE,
-                            audioFile);
+        //             // the file that will contain the audio data
+        //             AudioSystem.write(
+        //                     audioInputStream,
+        //                     AudioFileFormat.Type.WAVE,
+        //                     audioFile);
 
-                    // Simulate recording for 5 seconds
-                    for (int i = 0; i < 5; i++) {
-                        // Check for interruption during sleep
-                        if (Thread.interrupted()) {
-                            throw new InterruptedException("Recording thread interrupted during sleep.");
-                        }
+        //             // Simulate recording for 5 seconds
+        //             for (int i = 0; i < 5; i++) {
+        //                 // Check for interruption during sleep
+        //                 if (Thread.interrupted()) {
+        //                     throw new InterruptedException("Recording thread interrupted during sleep.");
+        //                 }
 
-                        Thread.sleep(1000); // Sleep for 1 second
-                    }
-                } catch (InterruptedException ex) {
-                    // Handle the interruption gracefully
-                    System.out.println("Recording thread stopped.");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            });
-            recordingThread.start();
-        }
+        //                 Thread.sleep(1000); // Sleep for 1 second
+        //             }
+        //         } catch (InterruptedException ex) {
+        //             // Handle the interruption gracefully
+        //             System.out.println("Recording thread stopped.");
+        //         } catch (Exception ex) {
+        //             ex.printStackTrace();
+        //         }
+        //     });
+        //     recordingThread.start();
+        // }
     }
 
     public void stopRecording() {
-        if (targetDataLine != null) {
-            targetDataLine.stop();
-            targetDataLine.close();
-        }
+        // if (targetDataLine != null) {
+        //     targetDataLine.stop();
+        //     targetDataLine.close();
+        // }
 
-        if (recordingThread != null && recordingThread.isAlive()) {
-            recordingThread.interrupt();
-            try {
-                recordingThread.join(); // Wait for the thread to finish
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        // if (recordingThread != null && recordingThread.isAlive()) {
+        //     recordingThread.interrupt();
+        //     try {
+        //         recordingThread.join(); // Wait for the thread to finish
+        //     } catch (InterruptedException e) {
+        //         e.printStackTrace();
+        //     }
+        // }
 
-        this.view.getAudioPrompt().setStopCtr(1);
+        // this.view.getAudioPrompt().setStopCtr(1);
         
-        isRecording = false;
-        this.view.getAudioPrompt().setRecordingState(isRecording);
+        // isRecording = false;
+        // this.view.getAudioPrompt().setRecordingState(isRecording);
 
-        if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.FILTER) {
-            this.view.getAudioPrompt().setIngredientAction();
-            this.view.getAudioPrompt().setCurrentStateBasedOnLabel();
-        } else {
-            try {
-                // Check if both mealTypeAudioFile and ingredientAudioFile is null before
-                // combining
-                if (mealTypeAudioFile != null && ingredientAudioFile != null) {
-                    combineAndSendAudioFiles(mealTypeAudioFile, ingredientAudioFile);
-                } else {
-                    // Handle the case where ingredientAudioFile is not available
-                    System.out.println("Both audio files need to be created.");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            this.view.getAudioPrompt().setFilterAction();
-            this.view.getAudioPrompt().setCurrentStateBasedOnLabel();
-        }
+        // if (this.view.getAudioPrompt().getCurrState() == AudioPromptState.FILTER) {
+        //     this.view.getAudioPrompt().setIngredientAction();
+        //     this.view.getAudioPrompt().setCurrentStateBasedOnLabel();
+        // } else {
+        //     try {
+        //         // Check if both mealTypeAudioFile and ingredientAudioFile is null before
+        //         // combining
+        //         if (mealTypeAudioFile != null && ingredientAudioFile != null) {
+        //             combineAndSendAudioFiles(mealTypeAudioFile, ingredientAudioFile);
+        //         } else {
+        //             // Handle the case where ingredientAudioFile is not available
+        //             System.out.println("Both audio files need to be created.");
+        //         }
+        //     } catch (IOException e) {
+        //         e.printStackTrace();
+        //     }
+        //     this.view.getAudioPrompt().setFilterAction();
+        //     this.view.getAudioPrompt().setCurrentStateBasedOnLabel();
+        // }
 
     }
 
     private void combineAndSendAudioFiles(File mealTypeAudioFile, File ingredientAudioFile) throws IOException {
-        // Combine the two audio files into a single file
-        File combinedAudioFile = new File("combinedAudio.wav");
+        // // Combine the two audio files into a single file
+        // File combinedAudioFile = new File("combinedAudio.wav");
 
-        try {
-            AudioInputStream mealTypeStream = AudioSystem.getAudioInputStream(mealTypeAudioFile);
-            AudioInputStream ingredientStream = AudioSystem.getAudioInputStream(ingredientAudioFile);
+        // try {
+        //     AudioInputStream mealTypeStream = AudioSystem.getAudioInputStream(mealTypeAudioFile);
+        //     AudioInputStream ingredientStream = AudioSystem.getAudioInputStream(ingredientAudioFile);
 
-            AudioInputStream combinedStream = new AudioInputStream(
-                    new SequenceInputStream(mealTypeStream, ingredientStream),
-                    mealTypeStream.getFormat(),
-                    mealTypeStream.getFrameLength() + ingredientStream.getFrameLength());
+        //     AudioInputStream combinedStream = new AudioInputStream(
+        //             new SequenceInputStream(mealTypeStream, ingredientStream),
+        //             mealTypeStream.getFormat(),
+        //             mealTypeStream.getFrameLength() + ingredientStream.getFrameLength());
 
-            // Write the combined audio to the file
-            AudioSystem.write(
-                    combinedStream,
-                    AudioFileFormat.Type.WAVE,
-                    combinedAudioFile);
-        } catch (UnsupportedAudioFileException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        //     // Write the combined audio to the file
+        //     AudioSystem.write(
+        //             combinedStream,
+        //             AudioFileFormat.Type.WAVE,
+        //             combinedAudioFile);
+        // } catch (UnsupportedAudioFileException e) {
+        //     // TODO Auto-generated catch block
+        //     e.printStackTrace();
+        // }
 
-        // Send the combined audio file to the server
-        sendPOST(combinedAudioFile);
+        // // Send the combined audio file to the server
+        // sendPOST(combinedAudioFile);
     }
 
     private void sendPOST(File uploadFile) throws IOException {
@@ -323,7 +323,7 @@ public class Model {
                 System.out.println("Image URL: " + imageURL);
 
                 // Update UI with recipe and image
-                Platform.runLater(() -> view.getRecipeView().getRoot().updateRecipeDetails(generatedRecipe, imageURL));
+                //Platform.runLater(() -> view.getRecipeView().getRoot().updateRecipeDetails(generatedRecipe, imageURL));
             }
         }
     }
