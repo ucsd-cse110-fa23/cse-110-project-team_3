@@ -429,16 +429,16 @@ public class Model {
         return temp;
     }
 
-    public void recipeToDB(String username, String password, RecipeList recipeList) {
+    public void recipeToDB(String user, String pass, RecipeList recipeList) {
         String uri = "mongodb+srv://sminowada1:4j5atYmTK9suF0Rp@cluster0.l0dnisn.mongodb.net/?retryWrites=true&w=majority";
         MongoClient mongoClient = MongoClients.create(uri);
         MongoDatabase recipeDB = mongoClient.getDatabase("RecipeDB");
-        MongoCollection<Document> recipeCollection = recipeDB.getCollection(username);
+        MongoCollection<Document> recipeCollection = recipeDB.getCollection(user);
         recipeCollection.drop();
+        // recipeCollection.deleteMany(new Document());
 
-        // add login info
         Document newLogin = new Document("_id", new ObjectId());
-        newLogin.append(username, password);
+        newLogin.append(user, pass);
         recipeCollection.insertOne(newLogin);
         // add recipes
         for (Recipe recipe : recipeList.getRecipeList()) {

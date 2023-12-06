@@ -2,9 +2,11 @@ package cse.project.team_3.client;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
@@ -60,15 +62,14 @@ public class Controller {
                     writer.println(password);
                     writer.close();
                 }
-                // TODO: Pull account details from database and add existing recipes to
-                // recipeList
+
                 RecipeList recipesDB = model.getRecipes(username, password);
                 setRecipeList(recipesDB);
                 Stage currentStage = (Stage) (((Button) event.getSource()).getScene().getWindow());
                 currentStage.close();
+
                 showRecipeListView();
             } catch (Exception e) {
-                // TODO: handle exception
             }
         } else {
             System.out.println("Invalid login");
@@ -88,8 +89,7 @@ public class Controller {
                     writer.println(password);
                     writer.close();
                 }
-                // TODO: Add account to database
-                showRecipeListView();
+                view.getRecipeListView();
             } catch (Exception e) {
                 // TODO: handle exception
             }
@@ -147,7 +147,16 @@ public class Controller {
             String username = this.view.getLoginView().getloginVW().getLogin().getUserInput().getText();
             String password = this.view.getLoginView().getloginVW().getLogin().getPassInput().getText();
             System.out.println("closing");
-            System.out.println(this.recipeList.size());
+            String filepath = "login.txt";
+            File file = new File(filepath);
+            if (file.exists()) {
+                try (BufferedReader reader = new BufferedReader(new FileReader("login.txt"))) {
+                    username = reader.readLine();
+                    password = reader.readLine();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
             model.recipeToDB(username, password, this.recipeList);
         });
         view.getRecipeListView().getRoot().getFooter().getSortDrop().setOnAction(e -> {
@@ -201,6 +210,8 @@ public class Controller {
                 String pass = reader.readLine();
                 if (model.serverRunning() == true) {
                     if (model.loginIsValid(user, pass)) {
+                        RecipeList recipesDB = model.getRecipes(user, pass);
+                        setRecipeList(recipesDB);
                         showRecipeListView();
                     }
                 }
