@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
 import javax.sound.sampled.AudioFileFormat;
@@ -42,9 +43,16 @@ public class Controller {
         this.model.setView(this.view);
     }
 
-    public void setRecipeList(RecipeList recipeList) {
+    public void setRecipeList(RecipeList recipeList) throws MalformedURLException, IOException, URISyntaxException, InterruptedException {
         this.recipeList = recipeList;
+        addImages();
         recipeList.filter();
+    }
+    public void addImages() throws MalformedURLException, IOException, URISyntaxException, InterruptedException {
+        for (int i = 0; i < recipeList.size(); i++) {
+            Recipe curr = recipeList.get(i);
+            curr.setImageURL(ClientDallE.generateImage(curr.getTitle()));
+        }
     }
 
     private void handleAddButton(ActionEvent event) {

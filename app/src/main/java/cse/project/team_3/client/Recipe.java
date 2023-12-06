@@ -23,6 +23,8 @@ public class Recipe {
         this.body = "No Body";
         this.mealType = "No Meal Type";
         this.ingredients = "No Ingredients";
+        this.imageURL = "No Image URL";
+        this.imageFileName = "No Image File Name";
         this.dateCreated = LocalDateTime.now();
     }
     public Recipe(String title, String body, String mealType, String ingredients) {
@@ -132,8 +134,9 @@ public class Recipe {
     public void setImageFileName(String imageFileName) {
         this.imageFileName = imageFileName;
     }
-    public void setImageURL(String imageURL) {
+    public void setImageURL(String imageURL) throws MalformedURLException, IOException, URISyntaxException {
         this.imageURL = imageURL;
+        handleImageURL();
     }
     public void handleImageURL() throws MalformedURLException, IOException, URISyntaxException {
         this.imageFileName = this.title.replace(" ", "_") + ".jpg";
@@ -142,7 +145,7 @@ public class Recipe {
             InputStream in = new URI(this.imageURL).toURL().openStream()
         )
         {
-            Files.copy(in, Paths.get(imageFileName));
+            Files.copy(in, Paths.get("Images/" + imageFileName));
         }
     }
 }
