@@ -62,6 +62,8 @@ public class Controller {
                 }
                 // TODO: Pull account details from database and add existing recipes to
                 // recipeList
+                RecipeList recipesDB = model.getRecipes(username, password);
+                setRecipeList(recipesDB);
                 Stage currentStage = (Stage) (((Button) event.getSource()).getScene().getWindow());
                 currentStage.close();
                 showRecipeListView();
@@ -109,7 +111,7 @@ public class Controller {
         newAudioPrompt.getStopButton().setOnAction(e -> {
             if (newAudioPrompt.getStopCtr() == 0) {
                 model.stopRecording();
-            }else{
+            } else {
                 String response = model.performRequest("PUT");
                 System.out.println("Controller Response: " + response);
                 Recipe newRecipe = new Recipe(response);
@@ -134,7 +136,7 @@ public class Controller {
         // Event handler for add button
         view.getRecipeListView().getRoot().getFooter().getAddButton().setOnAction(e -> {
             showAudioPrompt();
-            //AudioPrompt.setupAudioPrompt(new Stage(), this.view.getAudioPrompt());
+            // AudioPrompt.setupAudioPrompt(new Stage(), this.view.getAudioPrompt());
             System.out.println("Add Button Pressed");
         });
 
@@ -142,6 +144,11 @@ public class Controller {
         view.getRecipeListView().getRoot().getFooter().getSaveButton().setOnAction(e -> {
             // TODO: make this button save all recipes in the recipe list to a JSON object
             ((Stage) (((Button) e.getSource()).getScene().getWindow())).close();
+            String username = this.view.getLoginView().getloginVW().getLogin().getUserInput().getText();
+            String password = this.view.getLoginView().getloginVW().getLogin().getPassInput().getText();
+            System.out.println("closing");
+            System.out.println(this.recipeList.size());
+            model.recipeToDB(username, password, this.recipeList);
         });
         view.getRecipeListView().getRoot().getFooter().getSortDrop().setOnAction(e -> {
             String state = view.getRecipeListView().getRoot().getFooter().getSortDrop().getValue();

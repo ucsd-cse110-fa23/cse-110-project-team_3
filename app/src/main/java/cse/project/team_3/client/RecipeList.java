@@ -22,14 +22,21 @@ public class RecipeList {
         this.sortTag = "First Created";
         this.filterTag = "All";
     }
+
     public void setSortTag(String sortTag) {
         this.sortTag = sortTag;
     }
+
     public void setFilterTag(String filterTag) {
         this.filterTag = filterTag;
     }
+
     public List<Recipe> getVisibleRecipeList() {
         return visibleRecipeList;
+    }
+
+    public List<Recipe> getRecipeList() {
+        return recipeList;
     }
 
     /*
@@ -37,6 +44,7 @@ public class RecipeList {
      * a recipe, based on its title
      * 
      * @param title The title of the recipe that you are searching for
+     * 
      * @return true if the list contains the recipe or false if not
      */
     public boolean contains(String title) {
@@ -69,7 +77,7 @@ public class RecipeList {
      * @param recipe The String containing all of the recipe fields
      */
     public void add(String recipe) {
-        //TODO: Parse String from ChatGPT into a Recipe Object and Add to recipeList
+        // TODO: Parse String from ChatGPT into a Recipe Object and Add to recipeList
     }
 
     /*
@@ -89,6 +97,7 @@ public class RecipeList {
      * This method gets the recipe object at a specified index
      * 
      * @param i The index to retrieve a recipe from
+     * 
      * @return The recipe object that the specified index
      */
     public Recipe get(int i) {
@@ -99,7 +108,9 @@ public class RecipeList {
      * This method get the recipe object with the specified title
      * 
      * @param title The title of the recipe to retrieve
+     * 
      * @return The recipe object with the specified title
+     * 
      * @return null if no such recipe exists
      */
     public Recipe get(String title) {
@@ -114,6 +125,7 @@ public class RecipeList {
     public Recipe getVisible(int i) {
         return visibleRecipeList.get(i);
     }
+
     public Recipe getVisible(String title) {
         for (int i = 0; i < visibleRecipeList.size(); i++) {
             if (title == visibleRecipeList.get(i).getTitle()) {
@@ -131,6 +143,7 @@ public class RecipeList {
     public int size() {
         return recipeList.size();
     }
+
     public int visibleSize() {
         return visibleRecipeList.size();
     }
@@ -150,6 +163,7 @@ public class RecipeList {
     public void clear() {
         recipeList.clear();
     }
+
     static class CompareAlphabetically implements Comparator<Recipe> {
 
         @Override
@@ -158,6 +172,7 @@ public class RecipeList {
         }
 
     }
+
     static class CompareFirstCreated implements Comparator<Recipe> {
 
         @Override
@@ -166,6 +181,7 @@ public class RecipeList {
         }
 
     }
+
     public void sort() {
         switch (sortTag) {
             case "A-Z":
@@ -186,15 +202,19 @@ public class RecipeList {
     public void sortAlphabetically() {
         Collections.sort(recipeList, new CompareAlphabetically());
     }
+
     public void sortAlphabeticallyReverse() {
         Collections.sort(recipeList, new CompareAlphabetically().reversed());
     }
+
     public void sortFirstCreated() {
         Collections.sort(recipeList, new CompareFirstCreated());
     }
+
     public void sortLastCreated() {
         Collections.sort(recipeList, new CompareFirstCreated().reversed());
     }
+
     public void filter() {
         switch (filterTag) {
             case "Breakfast":
@@ -211,12 +231,14 @@ public class RecipeList {
                 break;
         }
     }
+
     private void filterAll() {
         visibleRecipeList.clear();
         for (int i = 0; i < recipeList.size(); i++) {
             visibleRecipeList.add(recipeList.get(i));
         }
     }
+
     public void filterBreakfast() {
         visibleRecipeList.clear();
         for (int i = 0; i < recipeList.size(); i++) {
@@ -225,6 +247,7 @@ public class RecipeList {
             }
         }
     }
+
     public void filterLunch() {
         visibleRecipeList.clear();
         for (int i = 0; i < recipeList.size(); i++) {
@@ -233,6 +256,7 @@ public class RecipeList {
             }
         }
     }
+
     public void filterDinner() {
         visibleRecipeList.clear();
         for (int i = 0; i < recipeList.size(); i++) {
@@ -242,4 +266,3 @@ public class RecipeList {
         }
     }
 }
-
