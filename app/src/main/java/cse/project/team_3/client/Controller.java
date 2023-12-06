@@ -10,6 +10,7 @@ import javax.swing.Action;
 
 import org.json.JSONObject;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
@@ -48,7 +49,7 @@ public class Controller {
     private void handleStopButton(ActionEvent event) {
         if (this.view.getAudioPrompt().getStopCtr() == 0) {
             model.stopRecording();
-        }else{
+        } else {
             String response = model.performRequest("PUT");
             System.out.println("Controller Response: " + response);
             Recipe newRecipe = new Recipe(response);
@@ -135,7 +136,7 @@ public class Controller {
         newAudioPrompt.getStopButton().setOnAction(e -> {
             if (newAudioPrompt.getStopCtr() == 0) {
                 model.stopRecording();
-            }else{
+            } else {
                 String response = model.performRequest("PUT");
                 System.out.println("Controller Response: " + response);
                 Recipe newRecipe = new Recipe(response);
@@ -160,7 +161,7 @@ public class Controller {
         // Event handler for add button
         view.getRecipeListView().getRoot().getFooter().getAddButton().setOnAction(e -> {
             showAudioPrompt();
-            //AudioPrompt.setupAudioPrompt(new Stage(), this.view.getAudioPrompt());
+            // AudioPrompt.setupAudioPrompt(new Stage(), this.view.getAudioPrompt());
             System.out.println("Add Button Pressed");
         });
 
@@ -173,7 +174,7 @@ public class Controller {
 
     /*
      * This method handles displaying the Recipe View UI
-     * It should be called whenever somethign should lead to this UI being shown
+     * It should be called whenever something should lead to this UI being shown
      * 
      * @param recipe The recipe that will be used to construct the UI
      */
@@ -188,6 +189,14 @@ public class Controller {
             updateRecipeListView();
             // Close the Recipe View UI
             ((Stage) (((Button) e.getSource()).getScene().getWindow())).close();
+        });
+
+        // Event handler for the refresh recipe button
+        view.getRecipeView().getRoot().getFooter().getRefreshRecipeButton().setOnAction(e -> {
+            // Refresh recipe
+            handleRefreshRecipe();
+            // Close the Recipe View UI (this would close the UI immediately)
+            // ((Stage) (((Button) e.getSource()).getScene().getWindow())).close();
         });
 
         // Event handler for the discard recipe button
@@ -275,6 +284,13 @@ public class Controller {
     public void updateRecipeListView() {
         view.getRecipeListView().clearRecipes();
         populateWithExistingRecipes();
+    }
+
+    /*
+     * This method handles refreshing the newly created recipe
+     */
+    private void handleRefreshRecipe() {
+        model.refreshRecipe();
     }
 
     public boolean handleServerStatus(ActionEvent event) {

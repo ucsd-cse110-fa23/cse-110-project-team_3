@@ -130,6 +130,7 @@ class RecipeAppFrame extends BorderPane {
     private RecipeBody recipeBody;
     private ScrollPane scroll;
     private Button saveRecipeButton;
+    private Button refreshRecipeButton;
     private Button discardRecipeButton;
 
     RecipeAppFrame(Recipe recipe) {
@@ -155,8 +156,8 @@ class RecipeAppFrame extends BorderPane {
 
         // Initialize Button Variables
         saveRecipeButton = footer.getSaveRecipeButton();
+        refreshRecipeButton = footer.getRefreshRecipeButton();
         discardRecipeButton = footer.getDiscardRecipeButton();
-
     }
 
     // Update with recipe and image
