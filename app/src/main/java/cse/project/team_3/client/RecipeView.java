@@ -171,6 +171,12 @@ class RecipeAppFrame extends BorderPane {
     public RecipeFooter getFooter() {
         return footer;
     }
+    public RecipeHeader getHeader() {
+        return header;
+    }
+    public RecipeBody getRecipeBody() {
+        return recipeBody;
+    }
 
 }
 
@@ -210,7 +216,10 @@ public class RecipeView extends Application {
     }
 
     public Recipe getRecipe() {
-        return recipe;
+        String title = root.getHeader().getTitleText();
+        String body = root.getRecipeBody().getText();
+        Recipe toReturn = new Recipe(title, body, recipe.getMealType(), recipe.getIngredients());
+        return toReturn;
     }
 
     public RecipeAppFrame getRoot() {
