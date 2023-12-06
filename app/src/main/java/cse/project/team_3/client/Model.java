@@ -133,13 +133,9 @@ public class Model {
                 // Successfully sent the request to the server
                 // You can read the server response if needed
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line + "\n");
-                }
+                String response = reader.readLine();
                 reader.close();
-                return response.toString();
+                return response;
             } else {
                 // Handle the error case
                 System.out.println("Failed to send the request. Response Code: " + responseCode);
@@ -298,33 +294,20 @@ public class Model {
             writer.append("Content-Transfer-Encoding: binary").append(CRLF);
             writer.append(CRLF).flush();
             Files.copy(uploadFile.toPath(), output);
-            output.flush();
+            output.close();
+            // int responseCode = ((HttpURLConnection) connection).getResponseCode();
+            // System.out.println("Response code: [" + responseCode + "]");
 
-            int responseCode = ((HttpURLConnection) connection).getResponseCode();
-            System.out.println("Response code: [" + responseCode + "]");
-
-            // Handle the response from the server
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-                reader.close();
-
-                // Extract recipe and image from JSON response
-                JSONObject jsonResponse = new JSONObject(response.toString());
-                String generatedRecipe = jsonResponse.getString("recipe");
-                String imageURL = jsonResponse.getString("imageURL");
-
-                // Print generated recipe and imageURL
-                System.out.println("Recipe: " + generatedRecipe);
-                System.out.println("Image URL: " + imageURL);
-
-                // Update UI with recipe and image
-                Platform.runLater(() -> view.getRecipeView().getRoot().updateRecipeDetails(generatedRecipe, imageURL));
-            }
+            // // Handle the response from the server
+            // if (responseCode == HttpURLConnection.HTTP_OK) {
+            //     BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            //     StringBuilder response = new StringBuilder();
+            //     String line;
+            //     while ((line = reader.readLine()) != null) {
+            //         response.append(line);
+            //     }
+            //     reader.close();
+            // }
         }
     }
 

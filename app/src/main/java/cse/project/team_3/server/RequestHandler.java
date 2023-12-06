@@ -5,8 +5,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import org.json.JSONObject;
-
 public class RequestHandler implements HttpHandler {
     private final Map<String, String> data;
     private File combinedAudioFile;
@@ -36,7 +34,7 @@ public class RequestHandler implements HttpHandler {
             e.printStackTrace();
         }
 
-        // Sending back response to the client
+        // Assuming you're working with an httpExchange
         httpExchange.sendResponseHeaders(200, response.length());
         OutputStream outStream = httpExchange.getResponseBody();
         outStream.write(response.getBytes());
@@ -74,13 +72,11 @@ public class RequestHandler implements HttpHandler {
             temp = temp.replace(".", ";");
             String[] recipe = temp.split(";", 2);
             String mealType = recipe[0];
-            if(mealType.startsWith("B") || mealType.startsWith("b")) {
-                mealType = "Breakfast";
-            }
+
             System.out.println("Meal Type: " + mealType);
             String ingredients = recipe[1];
 
-            String generatedRecipe = ChatGPT.generateResponse("give me a " + mealType + " recipe using " + ingredients + " without using fractions");
+            String generatedRecipe = ChatGPT.generateResponse("give me a " + mealType + " recipe using " + ingredients + " without using unicode characters");
             System.out.println("Generated Recipe: \n" + generatedRecipe);
 
             String imageURL = DallE.generateImage(generatedRecipe);
@@ -90,6 +86,7 @@ public class RequestHandler implements HttpHandler {
 
             // attaching it to the local data map for testing
             data.put(generatedID, generatedRecipe);
+            data.put("ImageURL", imageURL);
     
             // GET here using the generated ID
             System.out.println("\nquery: " + generatedID);
@@ -98,7 +95,7 @@ public class RequestHandler implements HttpHandler {
             // String retrievedRecipe = data.getOrDefault(generatedID, "Recipe not found");
             //RecipeImagePair pair = new RecipeImagePair(generatedRecipe, imageURL);
             //JSONObject pairJson = pairToJson(pair);
-            return generatedRecipe + ";" + mealType.trim() + ";" + ingredients.trim();
+            return generatedRecipe + ";" + mealType.trim() + ";" + imageURL + ";" + ingredients.trim();
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return null;
@@ -166,18 +163,12 @@ public class RequestHandler implements HttpHandler {
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(combinedAudioFile));
 
         bos.write(wavFileByteArray, 0, fileSize);
-        bos.flush();
+        bos.close();
 
         t.sendResponseHeaders(200, 0);
-        return "POST Request handled";
-    }
 
-    private static String pairToJson(RecipeImagePair pair) {
-        JSONObject json = new JSONObject();
-        json.put("recipe", pair.getRecipe());
-        json.put("imageURL", pair.getImageUrl());
-        
-        return json.toString();
+
+        return "POST Request handled";
     }
 
     private static String readLine(InputStream is, String lineSeparator)

@@ -9,6 +9,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import java.io.File;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -31,8 +32,9 @@ class RecipeBody extends VBox {
         imageView.setFitHeight(200);
         imageView.setSmooth(true);
 
-        this.getChildren().add(text);
         this.getChildren().add(imageView);
+        this.getChildren().add(text);
+        
         VBox.setMargin(text, new Insets(20, 20, 20, 20));
         this.setStyle("-fx-font-size: 15;");
     }
@@ -45,7 +47,9 @@ class RecipeBody extends VBox {
         return text.getText();
     }
 
-    public void setImage(Image image) {
+    public void setImage(String imageName) {
+        File file = new File(imageName);
+        Image image = new Image(file.toURI().toString());
         imageView.setImage(image);
     }
 
@@ -143,18 +147,19 @@ class RecipeAppFrame extends BorderPane {
 
     }
 
-    // Update with recipe and image
-    public void updateRecipeDetails(String generatedRecipe, String imageURL) {
-        recipeBody.setText(generatedRecipe);
-        if (imageURL != null && !imageURL.isEmpty()) {
-            Image image = new Image(imageURL); // DallE generated image
-            recipeBody.setImage(image);
-        }
-        //else { recipeBody.clearRecipeImage(); }
-    }
+    // // Update with recipe and image
+    // public void updateRecipeDetails(String generatedRecipe, String imageURL) {
+    //     recipeBody.setText(generatedRecipe);
+    //     if (imageURL != null && !imageURL.isEmpty()) {
+    //         Image image = new Image(imageURL); // DallE generated image
+    //         recipeBody.setImage(image);
+    //     }
+    //     //else { recipeBody.clearRecipeImage(); }
+    // }
 
-    public void setRecipeBody(String text) {
+    public void setRecipeBody(String text, String imageFile) {
         recipeBody = new RecipeBody(text);
+        recipeBody.setImage(imageFile);
         scroll.setContent(recipeBody);
     }
 
@@ -164,7 +169,7 @@ class RecipeAppFrame extends BorderPane {
     }
 
     public void buildRecipe(Recipe recipe) {
-        setRecipeBody(recipe.getBody());
+        setRecipeBody(recipe.getBody(), recipe.getImageFileName());
         setRecipeHeader(recipe.getTitle());
     }
 
@@ -205,9 +210,9 @@ public class RecipeView extends Application {
         root.buildRecipe(recipe);
     }
 
-    public void displayRecipeDetails(String generatedRecipe, String imageURL) {
-        root.updateRecipeDetails(generatedRecipe, imageURL);
-    }
+    // public void displayRecipeDetails(String generatedRecipe, String imageURL) {
+    //     root.updateRecipeDetails(generatedRecipe, imageURL);
+    // }
 
     public Recipe getRecipe() {
         return recipe;

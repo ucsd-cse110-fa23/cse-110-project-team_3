@@ -110,8 +110,8 @@ public class Controller {
             }else{
                 String response = model.performRequest("PUT");
                 System.out.println("Controller Response: " + response);
-                Recipe newRecipe = new Recipe(response);
                 try {
+                    Recipe newRecipe = new Recipe(response);
                     showRecipeView(newRecipe);
                 } catch (Exception exception) {
                     exception.printStackTrace();
