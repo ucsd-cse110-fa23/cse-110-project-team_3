@@ -168,7 +168,7 @@ public class Controller {
         // Event handler for the save recipe button
         view.getRecipeView().getRoot().getFooter().getSaveRecipeButton().setOnAction(e -> {
             // Add the recipe to the recipeList and then update the Recipe List View UI
-            this.recipeList.add(recipe);
+            this.recipeList.add(view.getRecipeView().getRecipe());
             updateRecipeListView();
             // Close the Recipe View UI
             ((Stage) (((Button) e.getSource()).getScene().getWindow())).close();
