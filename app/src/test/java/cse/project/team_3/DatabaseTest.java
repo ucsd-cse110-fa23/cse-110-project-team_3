@@ -48,9 +48,8 @@ public class DatabaseTest {
         String uri = "mongodb+srv://sminowada1:4j5atYmTK9suF0Rp@cluster0.l0dnisn.mongodb.net/?retryWrites=true&w=majority";
         MongoClient mongoClient = MongoClients.create(uri);
         MongoDatabase recipeDB = mongoClient.getDatabase("RecipeDB");
-        MongoCollection<Document> recipeCollection = recipeDB.getCollection("Login");
-        Bson filter = eq("NewUsername", "NewPassword");
-        recipeCollection.deleteOne(filter);
+        MongoCollection<Document> recipeCollection = recipeDB.getCollection("NewUsername");
+        recipeCollection.drop();
     }
 
 }
